@@ -1,0 +1,60 @@
+table.gallery {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.gallery td {
+  padding: 1em;
+  text-align: center;
+  vertical-align: middle;
+}
+
+table.gallery img.tn {
+  padding: 0.4em;
+  border: 1px solid #000;
+}
+
+div.gallery {
+  clear: left;
+  width: 80%;
+  text-align: center;
+  margin-bottom: 1em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.gallery div {
+  float: left;
+}
+
+div.gallery img.tn {
+  margin: 9px;
+  vertical-align: middle;
+  padding: 0.4em;
+  border: 1px solid #000;
+}
+
+/* for lightbox */
+
+#gallery__lightbox {
+    background-color: #eee;
+    padding: 10px;
+    border-bottom: 1px solid #666;
+    border-right: 1px solid #666;
+}
+#gallery__overlay {
+    background-image: url(images/overlay.png);
+}
+#gallery__lightboxCaption {
+    color: #333;
+    background-color: #eee;
+    font-size: 10px;
+    line-height: 10px;
+    text-align: center;
+    border-bottom: 1px solid #666;
+    border-right: 1px solid #666;
+}
+
+* html #gallery__overlay {
+    background-image: url(images/overlayie.png);
+}
