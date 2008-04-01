@@ -1,0 +1,8 @@
+# General Plugin Info do not edit
+
+author Andreas Gohr
+email  andi@splitbrain.org
+date   2008-04-01
+name   Gallery Plugin
+desc   Creates a gallery of images from a namespace
+url    http://wiki.splitbrain.org/plugin:gallery

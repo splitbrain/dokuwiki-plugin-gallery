@@ -40,6 +40,17 @@
     http://huddletogether.com/projects/lightbox/
 */
 
+
+
+/**
+ * This variable will enable the lightbox mode for every normal image
+ * embedded through the normal wiki image syntax and using the ?direct
+ * parameter.
+ *
+ * If you don't like that behavior, set this variable to 0.
+ */
+var lightboxForEveryImg = 1;
+
 function WindowSize()
 { // window size object
     this.w = 0;
@@ -144,8 +155,20 @@ LightBox.prototype = {
         for (var i=0;i<links.length;i++) {
             var anchor = links[i];
             var num = self._imgs.length;
-            if (!anchor.getAttribute("href")
-              || anchor.getAttribute("rel") != "lightbox") continue;
+
+            //check if this is a direct link to an image
+            if ( (anchor.getAttribute("href") && anchor.getAttribute("rel") == "lightbox") ||
+                 (lightboxForEveryImg && anchor.getAttribute("class") &&
+                  anchor.getAttribute("class").match("media") &&
+                  anchor.firstChild.nodeName.toLowerCase().match("img") &&
+                  anchor.getAttribute("href") &&
+                  anchor.getAttribute("href").match("lib/exe/fetch.php|_media/")) ){
+                // okay add lightbox
+            }else{
+                continue;
+            }
+
+
             // initialize item
             self._imgs[num] = {src:anchor.getAttribute("href"),w:-1,h:-1,title:'',cls:anchor.className};
             if (anchor.getAttribute("title"))

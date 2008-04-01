@@ -19,14 +19,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
      * return some info
      */
     function getInfo(){
-        return array(
-            'author' => 'Andreas Gohr',
-            'email'  => 'andi@splitbrain.org',
-            'date'   => '2006-11-12',
-            'name'   => 'Gallery Plugin',
-            'desc'   => 'Creates a gallery of images from a namespace',
-            'url'    => 'http://wiki.splitbrain.org/plugin:gallery',
-        );
+        return confToHash(dirname(__FILE__).'/info.txt');
     }
 
     /**
