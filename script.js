@@ -170,11 +170,15 @@ LightBox.prototype = {
 
 
             // initialize item
-            self._imgs[num] = {src:anchor.getAttribute("href"),w:-1,h:-1,title:'',cls:anchor.className};
+            self._imgs[num] = {src:anchor.getAttribute("href"),w:-1,h:-1,title:'',caption:'',cls:anchor.className};
             if (anchor.getAttribute("title"))
                 self._imgs[num].title = anchor.getAttribute("title");
             else if (anchor.firstChild && anchor.firstChild.getAttribute && anchor.firstChild.getAttribute("title"))
                 self._imgs[num].title = anchor.firstChild.getAttribute("title");
+            if (anchor.firstChild && anchor.firstChild.getAttribute &&
+                anchor.firstChild.getAttribute("title") && anchor.firstChild.getAttribute("title") == 'caption') {
+                self._imgs[num].caption = anchor.firstChild.innerHTML;
+            }
             anchor.onclick = self._genOpener(num); // set closure to onclick event
         }
         var body = d.getElementsByTagName("body")[0];
@@ -325,8 +329,9 @@ LightBox.prototype = {
         var self = this;
         if (self._open == -1) return;
         var imag = self._box.firstChild;
-        var targ = { w:self._page.win.w - 30, h:self._page.win.h - 30 };
+        var targ = { w:self._page.win.w - 30, h:self._page.win.h - 40 };
         var orig = { w:self._imgs[self._open].w, h:self._imgs[self._open].h };
+
         // shrink image with the same aspect
         var ratio = 1.0;
         if ((orig.w >= targ.w || orig.h >= targ.h) && orig.h && orig.w)
@@ -335,7 +340,7 @@ LightBox.prototype = {
         imag.height = Math.floor(orig.h * ratio);
         self._expandable = (ratio < 1.0) ? true : false;
         if (self._ua.isWinIE) self._box.style.display = "block";
-        self._box.style.top  = [self._pos.y + (self._page.win.h - imag.height - 30) / 2,'px'].join('');
+        self._box.style.top  = [self._pos.y + (self._page.win.h - imag.height - 33) / 2,'px'].join('');
         self._box.style.left = [((self._page.win.w - imag.width - 30) / 2),'px'].join('');
         self._show_caption(true);
     },
@@ -403,7 +408,8 @@ LightBox.prototype = {
                 top = [imag.height + 10,'px'].join(''); // 10 is top margin of lightbox
                 left = '0px';
                 width = [imag.width + 20,'px'].join(''); // 20 is total side margin of lightbox
-                height = '1.2em';
+                height = '';
+                paddingBottom = '3px';
                 display = 'block';
             }
         }
@@ -438,7 +444,8 @@ LightBox.prototype = {
                 self._imgs[self._open].w = imag.width;
                 self._imgs[self._open].h = imag.height;
             }
-            if (caption) caption.innerHTML = self._imgs[self._open].title;
+            if (caption) caption.innerHTML = '<b>'+self._imgs[self._open].title + '</b><br />' +
+                                             self._imgs[self._open].caption;
             self._set_photo_size(); // calc and set lightbox size
             self._hide_action();
             self._box.style.display = "block";

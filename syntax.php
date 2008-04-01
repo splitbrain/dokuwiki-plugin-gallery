@@ -57,10 +57,10 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
      */
     function parseOpt($params, $name) {
         if(preg_match('/\b'.$name.'\b/i',$params,$match)) {
-	    return true;
+            return true;
         }else if(preg_match('/\bno'.$name.'\b/i',$params,$match)) {
-	    return false;
-	}else{
+            return false;
+        }else{
             return $this->getConf($name);
         }
     }
@@ -105,20 +105,20 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         }
 
         //show the filename
-	$data['showname'] = $this->parseOpt($params, 'showname');
+        $data['showname'] = $this->parseOpt($params, 'showname');
 
         //lightbox style?
-	$data['lightbox'] = $this->parseOpt($params, 'lightbox');
-	
+        $data['lightbox'] = $this->parseOpt($params, 'lightbox');
+
         //direct linking?
-	if($data['lightbox']) {
+        if($data['lightbox']) {
             $data['direct']   = true; //implicit direct linking
-	}else{
-	    $data['direct'] = $this->parseOpt($params, 'direct');
-	}
+        }else{
+            $data['direct'] = $this->parseOpt($params, 'direct');
+        }
 
         //reverse sort?
-	$data['reverse'] = $this->parseOpt($params, 'reverse');
+        $data['reverse'] = $this->parseOpt($params, 'reverse');
 
         return $data;
     }
@@ -262,6 +262,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         // prepare output
         $ret  = '';
         $ret .= '<a href="'.$href.'" '.$aatt.'>';
+        $ret .= '<div title="caption" style="display: none;">'.hsc($img['meta']->getField('Iptc.Caption')).'</div>';
         $ret .= '<img src="'.$src.'" '.$iatt.' />';
         $ret .= '</a>';
         return $ret;
