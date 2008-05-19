@@ -49,7 +49,7 @@
  *
  * If you don't like that behavior, set this variable to 0.
  */
-var lightboxForEveryImg = 1;
+var lightboxForEveryImg = 0;
 
 function WindowSize()
 { // window size object

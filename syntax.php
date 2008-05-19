@@ -73,11 +73,16 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         $data = array();
 
+        //alignment
+        $data['align'] = 0;
+        if(substr($match,0,1) == ' ') $data['align'] += 1;
+        if(substr($match,-1,1) == ' ') $data['align'] += 2;
+
         //handle params
         list($ns,$params) = explode('?',$match,2);
 
         //namespace
-        $data['ns'] = $ns;
+        $data['ns'] = trim($ns);
 
         //max thumb dimensions
         if(preg_match('/\b(\d+)x(\d+)\b/',$params,$match)){
@@ -142,11 +147,34 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         global $lang;
         $ret = '';
 
-        //use the search to get all files
+        $align = '';
+        if($data['align'] == 1) $align = ' gallery_right';
+        if($data['align'] == 2) $align = ' gallery_left';
+        if($data['align'] == 3) $align = ' gallery_center';
+
+        // what images to use?
         $ns = cleanID($data['ns']);
         $dir = utf8_encodeFN(str_replace(':','/',$ns));
         $files = array();
-        search($files,$conf['mediadir'],'search_media',array(),$dir);
+
+        if(is_file($conf['mediadir'].'/'.$dir)){
+            //single file
+            $info = array();
+            if(preg_match("/\.(jpe?g|gif|png)$/",$dir)){
+                require_once(DOKU_INC.'inc/JpegMeta.php');
+                $files[] = array(
+                    'id'    => $ns,
+                    'isimg' => true,
+                    'meta'  => new JpegMeta($conf['mediadir'].'/'.$dir)
+                );
+            }
+            $single = true;
+        }else{
+            if(!$align) $align = ' gallery_center'; // center galleries on default
+            $single = false;
+            // use search to get the images
+            search($files,$conf['mediadir'],'search_media',array(),$dir);
+        }
 
         //anything found?
         if(!count($files)){
@@ -158,8 +186,13 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         if($data['reverse']) rsort($files);
 
         // build gallery
-        if($data['cols'] > 0){ // format as table
-            $ret .= '<table class="gallery">';
+        if($single && $files[0]['isimg']){
+            $ret .= '<div class="gallery'.$align.'">';
+            $ret .= $this->_image($files[0],$data);
+            $ret .= $this->_showname($files[0],$data);
+            $ret .= '</div> ';
+        }elseif($data['cols'] > 0){ // format as table
+            $ret .= '<table class="gallery'.$align.'">';
             $i = 0;
             foreach($files as $img){
                 if(!$img['isimg']) continue;
@@ -193,7 +226,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
             $ret .= '</table>';
         }else{ // format as div sequence
-            $ret .= '<div class="gallery">';
+            $ret .= '<div class="gallery'.$align.'">';
 
             foreach($files as $img){
                 if(!$img['isimg']) continue;
@@ -262,7 +295,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         // prepare output
         $ret  = '';
         $ret .= '<a href="'.$href.'" '.$aatt.'>';
-        $ret .= '<div title="caption" style="display: none;">'.hsc($img['meta']->getField('Iptc.Caption')).'</div>';
+        $ret .= '<span title="caption" style="display: none;">'.hsc($img['meta']->getField('Iptc.Caption')).'</span>';
         $ret .= '<img src="'.$src.'" '.$iatt.' />';
         $ret .= '</a>';
         return $ret;

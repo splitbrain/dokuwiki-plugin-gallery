@@ -1,37 +1,53 @@
-table.gallery {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-table.gallery td {
+div.dokuwiki table.gallery td {
   padding: 1em;
   text-align: center;
   vertical-align: middle;
 }
 
-table.gallery img.tn {
+div.dokuwiki table.gallery img.tn {
   padding: 0.4em;
   border: 1px solid #000;
 }
 
-div.gallery {
+div.dokuwiki div.gallery {
   clear: left;
-  width: 80%;
-  text-align: center;
   margin-bottom: 1em;
-  margin-left: auto;
-  margin-right: auto;
 }
 
-div.gallery div {
+/*div.dokuwiki div.gallery div {
   float: left;
-}
+}*/
 
-div.gallery img.tn {
+div.dokuwiki div.gallery img.tn {
   margin: 9px;
   vertical-align: middle;
   padding: 0.4em;
   border: 1px solid #000;
+}
+
+div.dokuwiki table.gallery_left,
+div.dokuwiki div.gallery_left {
+    float: left;
+}
+
+div.dokuwiki div.gallery div {
+    float: left;
+}
+
+div.dokuwiki table.gallery_right,
+div.dokuwiki div.gallery_right {
+    float: right;
+}
+
+div.dokuwiki table.gallery_center,
+div.dokuwiki div.gallery_center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.dokuwiki div.gallery_center {
+    width: 80%;
+    text-align: center;
 }
 
 /* for lightbox */
