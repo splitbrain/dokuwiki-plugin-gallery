@@ -148,9 +148,19 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $ret = '';
 
         $align = '';
-        if($data['align'] == 1) $align = ' gallery_right';
-        if($data['align'] == 2) $align = ' gallery_left';
-        if($data['align'] == 3) $align = ' gallery_center';
+        $xalign = '';
+        if($data['align'] == 1){
+            $align  = ' gallery_right';
+            $xalign = ' align="right"';
+        }
+        if($data['align'] == 2){
+            $align  = ' gallery_left';
+            $xalign = ' align="left"';
+        }
+        if($data['align'] == 3){
+            $align  = ' gallery_center';
+            $xalign = ' align="center"';
+        }
 
         // what images to use?
         $ns = cleanID($data['ns']);
@@ -171,6 +181,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             $single = true;
         }else{
             if(!$align) $align = ' gallery_center'; // center galleries on default
+            if(!$xalign) $xalign = ' align="center"';
             $single = false;
             // use search to get the images
             search($files,$conf['mediadir'],'search_media',array(),$dir);
@@ -187,12 +198,12 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         // build gallery
         if($single && $files[0]['isimg']){
-            $ret .= '<div class="gallery'.$align.'">';
+            $ret .= '<div class="gallery'.$align.'"'.$xalign.'>';
             $ret .= $this->_image($files[0],$data);
             $ret .= $this->_showname($files[0],$data);
             $ret .= '</div> ';
         }elseif($data['cols'] > 0){ // format as table
-            $ret .= '<table class="gallery'.$align.'">';
+            $ret .= '<table class="gallery'.$align.'"'.$xalign.'>';
             $i = 0;
             foreach($files as $img){
                 if(!$img['isimg']) continue;
@@ -226,7 +237,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
             $ret .= '</table>';
         }else{ // format as div sequence
-            $ret .= '<div class="gallery'.$align.'">';
+            $ret .= '<div class="gallery'.$align.'"'.$xalign.'>';
 
             foreach($files as $img){
                 if(!$img['isimg']) continue;
