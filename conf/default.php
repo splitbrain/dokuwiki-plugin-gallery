@@ -10,7 +10,6 @@ $conf['thumbnail_height'] = 120;
 $conf['image_width']      = 800;
 $conf['image_height']     = 600;
 $conf['cols']             = 5;
-$conf['direct']           = 0;
-$conf['lightbox']         = 0;
-$conf['showname']         = 0;
-$conf['reverse']          = 0;
+
+$conf['sort'] = 'file';
+$conf['options'] = 'cache';

@@ -176,8 +176,8 @@ LightBox.prototype = {
             else if (anchor.firstChild && anchor.firstChild.getAttribute && anchor.firstChild.getAttribute("title"))
                 self._imgs[num].title = anchor.firstChild.getAttribute("title");
             if (anchor.firstChild && anchor.firstChild.getAttribute &&
-                anchor.firstChild.getAttribute("title") && anchor.firstChild.getAttribute("title") == 'caption') {
-                self._imgs[num].caption = anchor.firstChild.innerHTML;
+                anchor.firstChild.getAttribute("longdesc")) {
+                self._imgs[num].caption = anchor.firstChild.getAttribute("longdesc");
             }
             anchor.onclick = self._genOpener(num); // set closure to onclick event
         }
