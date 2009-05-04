@@ -88,6 +88,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['cache']    = true;
         $data['crop']     = false;
         $data['sort']     = $this->getConf('sort');
+        $data['limit']    = 0;
+        $data['offset']   = 0;
 
         // parse additional options
         $params = $this->getConf('options').','.$params;
@@ -101,6 +103,10 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 $data['sort'] = 'date';
             }elseif($param == 'modsort'){
                 $data['sort'] = 'mod';
+            }elseif(preg_match('/^=(\d+)$/',$param,$match)){
+                $data['limit'] = $match[1];
+            }elseif(preg_match('/^\+(\d+)$/',$param,$match)){
+                $data['offset'] = $match[1];
             }elseif(is_numeric($param)){
                 $data['cols'] = (int) $param;
             }elseif(preg_match('/^(\d+)([xX])(\d+)$/',$param,$match)){
@@ -185,21 +191,23 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         // random?
         if($data['random']){
             shuffle($files);
-            return $files;
+        }else{
+            // sort?
+            if($data['sort'] == 'date'){
+                usort($files,array($this,'_datesort'));
+            }elseif($data['sort'] == 'mod'){
+                usort($files,array($this,'_modsort'));
+            }elseif($data['sort'] == 'title'){
+                usort($files,array($this,'_titlesort'));
+            }
+
+            // reverse?
+            if($data['reverse']) $files = array_reverse($files);
         }
 
-        // sort?
-        if($data['sort'] == 'date'){
-            usort($files,array($this,'_datesort'));
-        }elseif($data['sort'] == 'mod'){
-            usort($files,array($this,'_modsort'));
-        }elseif($data['sort'] == 'title'){
-            usort($files,array($this,'_titlesort'));
-        }
-
-        // reverse?
-        if($data['reverse']) $files = array_reverse($files);
-
+        // limits and offsets?
+        if($data['offset']) $files = array_slice($files,$data['offset']);
+        if($data['limit']) $files = array_slice($files,0,$data['limit']);
 
         return $files;
     }
