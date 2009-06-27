@@ -400,7 +400,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             $pgret .= '</div>';
         }
 
-        return '<div class="gallery'.$align.'"'.$xalign.'>'.$pgret.$ret.'</div>';
+        return '<div class="gallery'.$align.'"'.$xalign.'>'.$pgret.$ret.'<div class="clearer"></div></div>';
     }
 
     /**
