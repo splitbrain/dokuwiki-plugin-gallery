@@ -91,6 +91,9 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['cache']    = true;
         $data['crop']     = false;
         $data['sort']     = $this->getConf('sort');
+        $data['limit']    = 0;
+        $data['offset']   = 0;
+        $data['paginate'] = 0;
 
         // parse additional options
         $params = $this->getConf('options').','.$params;
