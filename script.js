@@ -547,6 +547,23 @@ function gallery_plugin(){
     opts.appendChild(gbrk);
 }
 
+/**
+ * Display a selected page and hide all others
+ */
+function gallery_pageselect(e){
+    var galid = e.target.hash.substr(10,4);
+
+    var pages = getElementsByClass('gallery__'+galid,document,'div');
+    for(var i=0; i<pages.length; i++){
+        if(pages[i].id == e.target.hash.substr(1)){
+            pages[i].style.display = '';
+        }else{
+            pages[i].style.display = 'none';
+        }
+    }
+    return false;
+}
+
 // === main ===
 addInitEvent(function() {
     var lightbox = new LightBox({
@@ -558,4 +575,19 @@ addInitEvent(function() {
         previmg:DOKU_BASE+'lib/plugins/gallery/images/prev.gif'
     });
     gallery_plugin();
+
+    // hide all pages except the first one
+    var pages = getElementsByClass('gallery_page',document,'div');
+    for(var i=0; i<pages.length; i++){
+        if(!pages[i].id.match(/_1/)){
+            pages[i].style.display = 'none';
+        }
+    }
+
+    // attach page selector
+    var pgsel = getElementsByClass('gallery_pgsel',document,'a');
+    for(var i=0; i<pgsel.length; i++){
+        addEvent(pgsel[i],'click',gallery_pageselect);
+    }
+
 });

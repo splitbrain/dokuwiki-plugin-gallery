@@ -2,7 +2,7 @@
 
 author Andreas Gohr
 email  andi@splitbrain.org
-date   2009-05-04
+date   2008-12-18
 name   Gallery Plugin
 desc   Creates a gallery of images from a namespace
-url    http://www.dokuwiki.org/plugin:gallery
+url    http://wiki.splitbrain.org/plugin:gallery

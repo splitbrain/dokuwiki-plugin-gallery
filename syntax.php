@@ -15,6 +15,7 @@ require_once(DOKU_INC.'inc/search.php');
 require_once(DOKU_INC.'inc/JpegMeta.php');
 
 class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
+
     /**
      * return some info
      */
@@ -60,6 +61,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         $data = array();
 
+        $data['galid'] = substr(md5($match),0,4);
+
         // alignment
         $data['align'] = 0;
         if(substr($match,0,1) == ' ') $data['align'] += 1;
@@ -88,8 +91,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['cache']    = true;
         $data['crop']     = false;
         $data['sort']     = $this->getConf('sort');
-        $data['limit']    = 0;
-        $data['offset']   = 0;
 
         // parse additional options
         $params = $this->getConf('options').','.$params;
@@ -109,6 +110,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 $data['offset'] = $match[1];
             }elseif(is_numeric($param)){
                 $data['cols'] = (int) $param;
+            }elseif(preg_match('/^~(\d+)$/',$param,$match)){
+                $data['paginate'] = $match[1];
             }elseif(preg_match('/^(\d+)([xX])(\d+)$/',$param,$match)){
                 if($match[2] == 'X'){
                     $data['iw'] = $match[1];
@@ -180,10 +183,10 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         // filter images
         for($i=0; $i<$len; $i++){
-            if($data['filter']){
+            if(!$files[$i]['isimg']){
+                unset($files[$i]); // this is faster, because RE was done before
+            }elseif($data['filter']){
                 if(!preg_match($data['filter'],noNS($files[$i]['id']))) unset($files[$i]);
-            }else{
-                if(!$files[$i]['isimg']) unset($files[$i]); // this is faster, because RE was done before
             }
         }
         if($len<1) return $files;
@@ -278,65 +281,123 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             if(!$xalign) $xalign = ' align="center"';
         }
 
+        $page = 0;
+
         // build gallery
         if($data['_single']){
-            $ret .= '<div class="gallery'.$align.'"'.$xalign.'>';
             $ret .= $this->_image($files[0],$data);
             $ret .= $this->_showname($files[0],$data);
             $ret .= $this->_showtitle($files[0],$data);
-            $ret .= '</div> ';
         }elseif($data['cols'] > 0){ // format as table
-            $ret .= '<table class="gallery'.$align.'"'.$xalign.'>';
+            $close_pg = false;
+
             $i = 0;
             foreach($files as $img){
-                if(!$img['isimg']) continue;
 
-                if($i == 0){
+                // new page?
+                if($data['paginate'] && ($i % $data['paginate'] == 0)){
+                     $ret .= '<div class="gallery_page gallery__'.$data['galid'].'" id="gallery__'.$data['galid'].'_'.(++$page).'">';
+                     $close_pg = true;
+                }
+
+                // new table?
+                if($i == 0 || ($data['paginate'] && ($i % $data['paginate'] == 0))){
+                    $ret .= '<table>';
+
+                }
+
+                // new row?
+                if($i % $data['cols'] == 0){
                     $ret .= '<tr>';
                 }
 
+                // an image cell
                 $ret .= '<td>';
                 $ret .= $this->_image($img,$data);
                 $ret .= $this->_showname($img,$data);
                 $ret .= $this->_showtitle($img,$data);
                 $ret .= '</td>';
-
                 $i++;
 
+                // done with this row? cloase it
                 $close_tr = true;
-                if($i == $data['cols']){
+                if($i % $data['cols'] == 0){
                     $ret .= '</tr>';
                     $close_tr = false;
-                    $i = 0;
                 }
+
+                // close current page and table
+                if($data['paginate'] && ($i % $data['paginate'] == 0)){
+                    if ($close_tr){
+                        // add remaining empty cells
+                        while($i % $data['cols']){
+                            $ret .= '<td></td>';
+                            $i++;
+                        }
+                        $ret .= '</tr>';
+                    }
+                    $ret .= '</table>';
+                    $ret .= '</div>';
+                    $close_pg = false;
+                }
+
             }
 
             if ($close_tr){
                 // add remaining empty cells
-                for(;$i < $data['cols']; $i++){
+                while($i % $data['cols']){
                     $ret .= '<td></td>';
+                    $i++;
                 }
                 $ret .= '</tr>';
             }
 
-            $ret .= '</table>';
+            if(!$data['paginate']){
+                $ret .= '</table>';
+            }elseif ($close_pg){
+                $ret .= '</table>';
+                $ret .= '</div>';
+            }
         }else{ // format as div sequence
-            $ret .= '<div class="gallery'.$align.'"'.$xalign.'>';
-
+            $i = 0;
+            $close_pg = false;
             foreach($files as $img){
-                if(!$img['isimg']) continue;
+
+                if($data['paginate'] && ($i % $data['paginate'] == 0)){
+                     $ret .= '<div class="gallery_page gallery__'.$data['galid'].'" id="gallery__'.$data['galid'].'_'.(++$page).'">';
+                     $close_pg = true;
+                }
 
                 $ret .= '<div>';
                 $ret .= $this->_image($img,$data);
                 $ret .= $this->_showname($img,$data);
                 $ret .= $this->_showtitle($img,$data);
                 $ret .= '</div> ';
+
+                $i++;
+
+                if($data['paginate'] && ($i % $data['paginate'] == 0)){
+                    $ret .= '</div>';
+                    $close_pg = false;
+                }
             }
 
-            $ret .= '<br style="clear:both" /></div>';
+            if($close_pg) $ret .= '</div>';
+
+            $ret .= '<br style="clear:both" />';
         }
 
-        return $ret;
+        // pagination links
+        $pgret = '';
+        if($page){
+            $pgret .= '<div class="gallery_pages">';
+            for($j=1; $j<=$page; $j++){
+                $pgret .= '<a href="#gallery__'.$data['galid'].'_'.$j.'" class="gallery_pgsel">'.$j.'</a> ';
+            }
+            $pgret .= '</div>';
+        }
+
+        return '<div class="gallery'.$align.'"'.$xalign.'>'.$pgret.$ret.'</div>';
     }
 
     /**
