@@ -450,22 +450,26 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     function _image(&$img,$data){
         global $ID;
 
-
         // calculate thumbnail size
+        if(!$data['crop']){
+            $w = (int) $this->_meta($img,'width');
+            $h = (int) $this->_meta($img,'height');
+            if($w && $h){
+                $dim = array();
+                if($w > $data['tw'] || $h > $data['th']){
+                    $ratio = $this->_ratio($img,$data['tw'],$data['th']);
+                    $w = floor($w * $ratio);
+                    $h = floor($h * $ratio);
+                    $dim = array('w'=>$w,'h'=>$h);
+                }
+            }else{
+                $data['crop'] = true; // no size info -> always crop
+            }
+        }
         if($data['crop']){
             $w = $data['tw'];
             $h = $data['th'];
             $dim = array('w'=>$w,'h'=>$h);
-        }else{
-            $w = (int) $this->_meta($img,'width');
-            $h = (int) $this->_meta($img,'height');
-            $dim = array();
-            if($w > $data['tw'] || $h > $data['th']){
-                $ratio = $this->_ratio($img,$data['tw'],$data['th']);
-                $w = floor($w * $ratio);
-                $h = floor($h * $ratio);
-                $dim = array('w'=>$w,'h'=>$h);
-            }
         }
 
         //prepare img attributes
