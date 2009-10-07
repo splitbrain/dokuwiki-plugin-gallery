@@ -166,8 +166,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $feed = new FeedParser();
         $feed->set_feed_url($url);
         $feed->init();
-
         $files = array();
+
         foreach($feed->get_items() as $item){
             if ($enclosure = $item->get_enclosure()){
                 if(substr($enclosure->get_type(),0,5) != 'image') continue;
@@ -447,8 +447,9 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     /**
      * Defines how a thumbnail should look like
      */
-    function _image($img,$data){
+    function _image(&$img,$data){
         global $ID;
+
 
         // calculate thumbnail size
         if($data['crop']){
@@ -558,7 +559,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
      * supplied in array
      */
     function _meta(&$img,$opt){
-        if($item['meta']){
+        if($img['meta']){
             // map JPEGMeta calls to opt names
 
             switch($opt){
@@ -567,11 +568,11 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 case 'desc':
                     return $img['meta']->getField('Iptc.Caption');
                 case 'cdate':
-                    return $img['meta']->getDateField('EarliestTime');
+                    return $img['meta']->getField('Date.EarliestTime');
                 case 'width':
-                    return $img['meta']->getDateField('File.Width');
+                    return $img['meta']->getField('File.Width');
                 case 'height':
-                    return $img['meta']->getDateField('File.Height');
+                    return $img['meta']->getField('File.Height');
 
 
                 default:
