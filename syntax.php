@@ -168,14 +168,45 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $feed->init();
         $files = array();
 
+        // base url to use for broken feeds with non-absolute links
+        $main = parse_url($url);
+        $host = $main['scheme'].'://'.
+                $main['host'].
+                (($main['port'])?':'.$main['port']:'');
+        $path = dirname($main['path']).'/';
+
         foreach($feed->get_items() as $item){
             if ($enclosure = $item->get_enclosure()){
-                if(substr($enclosure->get_type(),0,5) != 'image') continue;
+                // skip non-image enclosures
+                if($enclosure->get_type()){
+                    if(substr($enclosure->get_type(),0,5) != 'image') continue;
+                }else{
+                    if(!preg_match('/\.(jpe?g|png|gif)(\?|$)/i',
+                       $enclosure->get_link())) continue;
+                }
+
+                // non absolute links
+                $ilink = $enclosure->get_link();
+                if(!preg_match('/^https?:\/\//i',$ilink)){
+                    if($ilink{0} == '/'){
+                        $ilink = $host.$ilink;
+                    }else{
+                        $ilink = $host.$path.$ilink;
+                    }
+                }
+                $link = $item->link;
+                if(!preg_match('/^https?:\/\//i',$link)){
+                    if($link{0} == '/'){
+                        $link = $host.$link;
+                    }else{
+                        $link = $host.$path.$link;
+                    }
+                }
 
                 $files[] = array(
-                    'id'     => $enclosure->get_link(),
+                    'id'     => $ilink,
                     'isimg'  => true,
-                    'file'   => basename($enclosure->get_link()),
+                    'file'   => basename($ilink),
                     // decode to avoid later double encoding
                     'title'  => SimplePie_Misc::htmlspecialchars_decode($enclosure->get_title(),ENT_COMPAT),
                     'desc'   => strip_tags(SimplePie_Misc::htmlspecialchars_decode($enclosure->get_description(),ENT_COMPAT)),
@@ -183,7 +214,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                     'height' => $enclosure->get_height(),
                     'mtime'  => $item->get_date('U'),
                     'ctime'  => $item->get_date('U'),
-                    'detail' => $item->link,
+                    'detail' => $link,
                 );
             }
         }
