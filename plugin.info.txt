@@ -1,5 +1,4 @@
-# General Plugin Info do not edit
-
+base   gallery
 author Andreas Gohr
 email  andi@splitbrain.org
 date   2009-11-02

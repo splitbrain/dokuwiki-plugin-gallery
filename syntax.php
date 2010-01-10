@@ -17,13 +17,6 @@ require_once(DOKU_INC.'inc/JpegMeta.php');
 class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
     /**
-     * return some info
-     */
-    function getInfo(){
-        return confToHash(dirname(__FILE__).'/info.txt');
-    }
-
-    /**
      * What kind of syntax are we?
      */
     function getType(){
