@@ -444,8 +444,8 @@ LightBox.prototype = {
                 self._imgs[self._open].w = imag.width;
                 self._imgs[self._open].h = imag.height;
             }
-            if (caption) caption.innerHTML = '<b>'+self._imgs[self._open].title + '</b><br />' +
-                                             self._imgs[self._open].caption;
+            if (caption) caption.innerHTML = '<b>'+self.hsc(self._imgs[self._open].title) + '</b><br />' +
+                                             self.hsc(self._imgs[self._open].caption);
             self._set_photo_size(); // calc and set lightbox size
             self._hide_action();
             self._box.style.display = "block";
@@ -516,7 +516,17 @@ LightBox.prototype = {
         } else if(key == 'n' || (keycode == 39) ){  // display next image
             self._move(+1);
         }
+    },
+
+    hsc: function(str) {
+        str = str.replace(/&/g,"&amp;");
+        str = str.replace(/\"/g,"&quot;");
+        str = str.replace(/\'/g,"&#039;");
+        str = str.replace(/</g,"&lt;");
+        str = str.replace(/>/g,"&gt;");
+        return str;
     }
+
 };
 
 /**
