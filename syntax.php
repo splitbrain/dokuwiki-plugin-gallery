@@ -87,6 +87,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['random']   = false;
         $data['cache']    = true;
         $data['crop']     = false;
+        $data['recursive']= true;
         $data['sort']     = $this->getConf('sort');
         $data['limit']    = 0;
         $data['offset']   = 0;
@@ -239,7 +240,12 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 );
                 $data['_single'] = true;
             }else{
-                search($files,$conf['mediadir'],'search_media',array(),$dir);
+                $depth = $data['recursive'] ? 0 : 1;
+                search($files,
+                       $conf['mediadir'],
+                       'search_media',
+                       array('depth'=>$depth),
+                       $dir);
                 $data['_single'] = false;
             }
         }
