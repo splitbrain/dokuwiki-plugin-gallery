@@ -1,7 +1,7 @@
 gallery Plugin for DokuWiki
 
 All documentation for this plugin can be found at
-http://www.dokuwiki.org/gallery
+http://www.dokuwiki.org/plugin:gallery
 
 If you install this plugin manually, make sure it is installed in
 lib/plugins/gallery/ - if the folder is called different it
