@@ -105,6 +105,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 $data['sort'] = 'date';
             }elseif($param == 'modsort'){
                 $data['sort'] = 'mod';
+            }elseif($param == 'filesort'){
+                $data['sort'] = 'file';
             }elseif(preg_match('/^=(\d+)$/',$param,$match)){
                 $data['limit'] = $match[1];
             }elseif(preg_match('/^\+(\d+)$/',$param,$match)){
@@ -276,6 +278,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 usort($files,array($this,'_modsort'));
             }elseif($data['sort'] == 'title'){
                 usort($files,array($this,'_titlesort'));
+            }elseif($data['sort'] == 'file'){
+                usort($files,array($this,'_filesort'));
             }
 
             // reverse?
@@ -317,7 +321,15 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $tb = $this->_meta($b,'title');
         return strcmp($ta,$tb);
     }
-
+    
+    /**
+     * usort callback to sort by filename
+     */
+    function _filesort($a,$b){
+        $ta = $this->_meta($a,'file');
+        $tb = $this->_meta($b,'file');
+        return strcmp($ta,$tb);
+    }
 
     /**
      * Does the gallery formatting
