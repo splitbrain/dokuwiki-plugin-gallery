@@ -531,7 +531,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         if($data['lightbox']){
             $href   = ml($img['id'],$dim_lightbox);
             $a['class'] = "lightbox JSnocheck";
-            $a['rel']   = "lightbox";
+            $a['rel']   = 'lightbox[gal-'.substr(md5($ID),4).']'; //unique ID for the gallery
         }elseif($img['detail'] && !$data['direct']){
             $href   = $img['detail'];
         }else{
