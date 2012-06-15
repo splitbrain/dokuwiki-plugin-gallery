@@ -35,7 +35,7 @@ function gallery_pageselect(e){
     var galid = e.target.hash.substr(10,4);
     var $pages = jQuery('div.gallery__'+galid);
     $pages.hide();
-    $pages.find(e.target.hash.substr(1)).show();
+    jQuery('#'+e.target.hash.substr(1)).show();
     return false;
 }
 
