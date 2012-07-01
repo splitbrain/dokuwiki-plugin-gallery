@@ -6,6 +6,7 @@
  * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Joe Lapp <joe.lapp@pobox.com>
  * @author     Dave Doyle <davedoyle.canadalawbook.ca>
+ * @author     Martyn Eggleton <martyn.eggleton@gmail.com>
  */
 
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
@@ -81,6 +82,9 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['filter']   = '';
         $data['lightbox'] = false;
         $data['direct']   = false;
+        $data['page']     = false;
+        $data['page_trimnumbers']=false;
+        $data['page_useid']=false;
         $data['showname'] = false;
         $data['showtitle'] = false;
         $data['reverse']  = false;
@@ -136,8 +140,18 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         // implicit direct linking?
         if($data['lightbox']) $data['direct']   = true;
-
-
+        
+        //Implicit page linking if using advanced page linking
+        if($data['page_useid'] || $data['page_trimnumbers'])
+        {
+          $data['page'] = true;
+        }
+        
+        if($data['page'] && auth_quickaclcheck($ID) >= AUTH_EDIT)
+        {
+          $data['cache'] = false;
+        }
+        
         return $data;
     }
 
@@ -532,6 +546,27 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             $href   = ml($img['id'],$dim_lightbox);
             $a['class'] = "lightbox JSnocheck";
             $a['rel']   = "lightbox";
+        }elseif($data['page']) {
+            if(!$a['title'] || $data['page_useid'])
+            {
+              $new_id = cleanID(substr($img['id'], 0, -strlen(strrchr($img['id'], '.'))));
+            }
+            else
+            {
+                $new_id = cleanID($data['ns'].':'.substr($a['title'], 0, -strlen(strrchr($a['title'], '.'))));
+            
+            }
+            $newpath = wikiFN($new_id);
+            
+            //if we have the trimnumbers on and there is not an existing page with the numbers
+            if($data['page_trimnumbers'] && !@file_exists($newpath))
+            {
+              $new_id = preg_replace('/[0-9]+$/', '', $new_id);
+              $newpath = wikiFN($new_id);
+            }
+            if ( @file_exists($newpath) || auth_quickaclcheck($new_id) >= AUTH_EDIT ) {
+              $href   = wl($new_id);
+            }
         }elseif($img['detail'] && !$data['direct']){
             $href   = $img['detail'];
         }else{
