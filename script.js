@@ -12,7 +12,7 @@ function gallery_plugin(){
     var glnk = document.createElement('a');
     var gbrk = document.createElement('br');
     glnk.name         = 'gallery_plugin';
-    glnk.innerHTML    = 'Add namespace as gallery'; //FIXME localize
+    glnk.innerHTML    = LANG.plugins.gallery.addgal; //FIXME localize
     glnk.style.cursor = 'pointer';
 
     glnk.onclick = function(){
