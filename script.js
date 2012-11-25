@@ -41,7 +41,7 @@ function gallery_pageselect(e){
 
 // === main ===
 jQuery(function(){
-    jQuery("a.lightbox").prettyPhoto({
+    jQuery("a.lightbox, a[rel^='lightbox']").prettyPhoto({
         overlay_gallery: false,
         slideshow: 2000,
         description_src: 'longdesc'
