@@ -202,8 +202,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                     'isimg'  => true,
                     'file'   => basename($ilink),
                     // decode to avoid later double encoding
-                    'title'  => SimplePie_Misc::htmlspecialchars_decode($enclosure->get_title(),ENT_COMPAT),
-                    'desc'   => strip_tags(SimplePie_Misc::htmlspecialchars_decode($enclosure->get_description(),ENT_COMPAT)),
+                    'title'  => htmlspecialchars_decode($enclosure->get_title(),ENT_COMPAT),
+                    'desc'   => strip_tags(htmlspecialchars_decode($enclosure->get_description(),ENT_COMPAT)),
                     'width'  => $enclosure->get_width(),
                     'height' => $enclosure->get_height(),
                     'mtime'  => $item->get_date('U'),
