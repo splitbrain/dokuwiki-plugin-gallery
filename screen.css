@@ -58,3 +58,9 @@ div.dokuwiki div.gallery div.gallery_pages {
     text-align: left;
 }
 
+/* remove some of the default styling that interferes with the lightbox */
+.mfp-container button:hover,
+.mfp-container button:active,
+.mfp-container button:focus {
+    background: transparent;
+}

@@ -1,4 +1,4 @@
-/* DOKUWIKI:include_once jquery.prettyPhoto.js */
+/* DOKUWIKI:include_once jquery.magnific.js */
 
 /**
  * Add a quicklink to the media popup
@@ -41,10 +41,25 @@ function gallery_pageselect(e){
 
 // === main ===
 jQuery(function(){
-    jQuery("a.lightbox, a[rel^='lightbox']").prettyPhoto({
-        overlay_gallery: false,
-        slideshow: 2000,
-        description_src: 'longdesc'
+    /**
+     * Initialize the magnific popup lightbox
+     */
+    jQuery("a.lightbox, a[rel^='lightbox']").magnificPopup({
+        type: 'image',
+        image: {
+            // we use our own title provider for proper escaping and longdesc support
+            titleSrc: function(item){
+                var $title = jQuery(document.createElement('div'));
+                $title.text(item.el.attr('title'));
+                var $desc = jQuery(document.createElement('small'));
+                $desc.text(item.el.find('img').attr('longdesc'));
+                $title.append($desc);
+                return $title;
+            }
+        },
+        gallery: {
+            enabled: true
+        }
     });
 
     gallery_plugin();
