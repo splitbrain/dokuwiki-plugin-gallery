@@ -1,4 +1,4 @@
-/*! Magnific Popup - v0.8.8 - 2013-05-24
+/*! Magnific Popup - v0.8.9 - 2013-06-04
  * http://dimsemenov.com/plugins/magnific-popup/
  * Copyright (c) 2013 Dmitry Semenov; */
 ;(function($) {
@@ -15,6 +15,7 @@
      * Private static constants
      */
     var CLOSE_EVENT = 'Close',
+        AFTER_CLOSE_EVENT = 'AfterClose',
         BEFORE_APPEND_EVENT = 'BeforeAppend',
         MARKUP_PARSE_EVENT = 'MarkupParse',
         OPEN_EVENT = 'Open',
@@ -141,8 +142,8 @@
         init: function() {
             var appVersion = navigator.appVersion;
             mfp.isIE7 = appVersion.indexOf("MSIE 7.") !== -1;
-            mfp.isIE8 = appVersion.indexOf("MSIE 8.") !== -1,
-                mfp.isLowIE = mfp.isIE7 || mfp.isIE8;
+            mfp.isIE8 = appVersion.indexOf("MSIE 8.") !== -1;
+            mfp.isLowIE = mfp.isIE7 || mfp.isIE8;
             mfp.isAndroid = (/android/gi).test(appVersion);
             mfp.isIOS = (/iphone|ipad|ipod/gi).test(appVersion);
             // We disable fixed positioned lightbox on devices that don't handle it nicely.
@@ -308,9 +309,11 @@
             var bodyStyles = {};
 
             if( mfp.fixedContentPos ) {
-                var s = mfp._getScrollbarSize();
-                if(s) {
-                    bodyStyles.paddingRight = s;
+                if(mfp._hasScrollBar(windowHeight)){
+                    var s = mfp._getScrollbarSize();
+                    if(s) {
+                        bodyStyles.paddingRight = s;
+                    }
                 }
             }
 
@@ -413,11 +416,11 @@
             mfp._removeClassFromMFP(classesToRemove);
 
             if(mfp.fixedContentPos) {
-                var bodyStyles = {paddingRight: 0};
+                var bodyStyles = {paddingRight: ''};
                 if(mfp.isIE7) {
-                    $('body, html').css('overflow', 'auto');
+                    $('body, html').css('overflow', '');
                 } else {
-                    bodyStyles.overflow = 'visible';
+                    bodyStyles.overflow = '';
                 }
                 _body.css(bodyStyles);
             }
@@ -444,6 +447,8 @@
             mfp.content = null;
             mfp.currTemplate = null;
             mfp.prevHeight = 0;
+
+            _mfpTrigger(AFTER_CLOSE_EVENT);
         },
 
         updateSize: function(winHeight) {
@@ -456,6 +461,10 @@
                 mfp.wH = height;
             } else {
                 mfp.wH = winHeight || _window.height();
+            }
+            // Fixes #84: popup incorrectly positioned with position:relative on body
+            if(!mfp.fixedContentPos) {
+                mfp.wrap.css('height', mfp.wH);
             }
 
             _mfpTrigger('Resize');
@@ -705,12 +714,8 @@
             mfp.wrap.removeClass(cName);
         },
         _hasScrollBar: function(winHeight) {
-            if(document.body.clientHeight > (winHeight || _window.height()) ) {
-                return true;
-            }
-            return false;
+            return (  (mfp.isIE7 ? _document.height() : document.body.scrollHeight) > (winHeight || _window.height()) )
         },
-
         _parseMarkup: function(template, values, item) {
             var arr;
             if(item.data) {
@@ -907,6 +912,7 @@
      }
      console.log('Test #2:', performance.now() - start);
      */
+
 
     /*>>core*/
 

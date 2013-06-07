@@ -212,21 +212,21 @@ button::-moz-focus-inner {
     left: 0; }
 .mfp-arrow-left:after,
 .mfp-arrow-left .mfp-a {
-    border-right: 12px solid #000;
+    border-right: 12px solid black;
     left: 5px; }
 .mfp-arrow-left:before,
 .mfp-arrow-left .mfp-b {
-    border-right: 20px solid #FFF; }
+    border-right: 20px solid white; }
 
 .mfp-arrow-right {
     right: 0; }
 .mfp-arrow-right:after,
 .mfp-arrow-right .mfp-a {
-    border-left: 12px solid #000;
+    border-left: 12px solid black;
     left: 3px; }
 .mfp-arrow-right:before,
 .mfp-arrow-right .mfp-b {
-    border-left: 20px solid #FFF; }
+    border-left: 20px solid white; }
 
 .mfp-iframe-holder {
     padding-top: 40px;
@@ -245,7 +245,8 @@ button::-moz-focus-inner {
 
 .mfp-iframe-scaler iframe {
     position: absolute;
-    top: -3px;
+    display: block;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
@@ -253,7 +254,7 @@ button::-moz-focus-inner {
     background: black; }
 
 .mfp-iframe-holder .mfp-close {
-    top: -43px; }
+    top: -40px; }
 
 /* Main image in popup */
 img.mfp-img {
