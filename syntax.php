@@ -151,7 +151,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             $R->doc .= $this->_gallery($data);
             return true;
         }elseif($mode == 'metadata'){
-            $files = $this->_findimages($data);
             $rel = p_get_metadata($ID,'relation',METADATA_RENDER_USING_CACHE);
             $img = $rel['firstimage'];
             if(empty($img)){
