@@ -144,12 +144,23 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, &$R, $data) {
-        if($mode != 'xhtml') return false;
-
-        $R->info['cache'] = $data['cache'];
-        $R->doc .= $this->_gallery($data);
-        return true;
+    function render($mode, &$R, $data){
+        global $ID;
+        if($mode == 'xhtml'){
+            $R->info['cache'] = $data['cache'];
+            $R->doc .= $this->_gallery($data);
+            return true;
+        }elseif($mode == 'metadata'){
+            $files = $this->_findimages($data);
+            $rel = p_get_metadata($ID,'relation',METADATA_RENDER_USING_CACHE);
+            $img = $rel['firstimage'];
+            if(empty($img)){
+                $files = $this->_findimages($data);
+                if(count($files)) $R->internalmedia($files[0]['id']);
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
