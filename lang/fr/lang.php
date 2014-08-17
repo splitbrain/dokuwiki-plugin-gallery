@@ -5,6 +5,7 @@
  * 
  * @author Christian "Na_kai" Sueur <sueur.christian@gmail.com>
  * @author NicolasFriedli <nicolas@theologique.ch>
+ * @author Schplurtz le Déboulonné <schplurtz@laposte.net>
  */
 $lang['pages']                 = 'Pages galerie:';
-$lang['js']['addgal']          = 'Utiliser un espace de nom comme galerie';
+$lang['js']['addgal']          = 'Utiliser cette catégorie comme galerie';
