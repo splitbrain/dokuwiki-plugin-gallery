@@ -478,15 +478,7 @@
 			 */
 			showBars : function () {
 				var bars = $( '#swipebox-top-bar, #swipebox-bottom-bar' );
-				if ( this.doCssTrans() ) {
-					bars.addClass( 'visible-bars' );
-				} else {
-					$( '#swipebox-top-bar' ).animate( { top : 0 }, 500 );
-					$( '#swipebox-bottom-bar' ).animate( { bottom : 0 }, 500 );
-					setTimeout( function() {
-						bars.addClass( 'visible-bars' );
-					}, 1000 );
-				}
+				bars.addClass( 'visible-bars' );
 			},
 
 			/**
@@ -494,15 +486,7 @@
 			 */
 			hideBars : function () {
 				var bars = $( '#swipebox-top-bar, #swipebox-bottom-bar' );
-				if ( this.doCssTrans() ) {
-					bars.removeClass( 'visible-bars' );
-				} else {
-					$( '#swipebox-top-bar' ).animate( { top : '-50px' }, 500 );
-					$( '#swipebox-bottom-bar' ).animate( { bottom : '-50px' }, 500 );
-					setTimeout( function() {
-						bars.removeClass( 'visible-bars' );
-					}, 1000 );
-				}
+				bars.removeClass( 'visible-bars' );
 			},
 
 			/**
@@ -631,6 +615,10 @@
 				} else if ( index === elements.length - 1 && plugin.settings.loopAtEnd !== true ) {
 					$( '#swipebox-next' ).addClass( 'disabled' );
 				}
+
+				// reshow bars on each navigation
+				this.showBars();
+				this.setTimeout();
 			},
 
 			/**
@@ -766,7 +754,7 @@
 				if ( a.search ) {
 					qs = JSON.parse( '{"' + a.search.toLowerCase().replace('?','').replace(/&/g,'","').replace(/=/g,'":"') + '"}' );
 				}
-
+				
 				// Extend with custom data
 				if ( $.isPlainObject( customData ) ) {
 					qs = $.extend( qs, customData, plugin.settings.queryStringData ); // The dev has always the final word

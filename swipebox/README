@@ -1,3 +1,6 @@
-src folder of https://github.com/brutaldesign/swipebox.git
+This is a silightly modified version of the SwipeBox script available at  https://github.com/brutaldesign/swipebox.git
 
-css/swipebox.css has been renamed to css/swipebox.less
+The modfied sources are available at https://github.com/splitbrain/swipebox/tree/dokuwiki - only the src directory is
+included here.
+
+css/swipebox.css has been renamed to css/swipebox.less to work with DokuWiki's less compiler inclusion mechanism
