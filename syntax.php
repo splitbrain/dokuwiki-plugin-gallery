@@ -518,8 +518,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $i['height']   = $h;
         $i['border']   = 0;
         $i['alt']      = $this->_meta($img,'title');
-        $i['longdesc'] = str_replace("\n",' ',$this->_meta($img,'desc'));
-        if(!$i['longdesc']) unset($i['longdesc']);
         $i['class']    = 'tn';
         $iatt = buildAttributes($i);
         $src  = ml($img['id'],$dim);
@@ -538,6 +536,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         //prepare link attributes
         $a           = array();
         $a['title']  = $this->_meta($img,'title');
+        $a['data-caption'] = trim(str_replace("\n",' ',$this->_meta($img,'desc')));
+        if(!$a['data-caption']) unset($a['data-caption']);
         if($data['lightbox']){
             $href   = ml($img['id'],$dim_lightbox);
             $a['class'] = "lightbox JSnocheck";

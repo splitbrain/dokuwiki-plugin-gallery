@@ -1,4 +1,4 @@
-/* DOKUWIKI:include_once jquery.prettyPhoto.js */
+/* DOKUWIKI:include_once swipebox/js/jquery.swipebox.js */
 
 /**
  * Add a quicklink to the media popup
@@ -41,10 +41,9 @@ function gallery_pageselect(e){
 
 // === main ===
 jQuery(function(){
-    jQuery("a.lightbox, a[rel^='lightbox']").prettyPhoto({
-        overlay_gallery: false,
-        slideshow: 2000,
-        description_src: 'longdesc'
+    // initialize the lightbox mechanism
+    jQuery("a.lightbox, a[rel^='lightbox']").swipebox({
+        loopAtEnd: true
     });
 
     gallery_plugin();
