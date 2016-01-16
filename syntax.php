@@ -48,7 +48,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         global $ID;
         $match = substr($match,10,-2); //strip markup from start and end
 
@@ -144,7 +144,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, &$R, $data){
+    function render($mode, Doku_Renderer $R, $data){
         global $ID;
         if($mode == 'xhtml'){
             $R->info['cache'] = $data['cache'];
