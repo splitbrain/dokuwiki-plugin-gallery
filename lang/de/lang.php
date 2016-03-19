@@ -5,5 +5,5 @@
  * 
  * @author Andreas Gohr <andi@splitbrain.org>
  */
-$lang['pages']                 = 'Gallerie-Seiten:';
-$lang['js']['addgal']          = 'Namensraum als Gallerie hinzufügen';
+$lang['pages']                 = 'Galerie-Seiten:';
+$lang['js']['addgal']          = 'Namensraum als Galerie hinzufügen';
