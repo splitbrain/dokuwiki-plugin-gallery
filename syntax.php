@@ -147,7 +147,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     function render($mode, Doku_Renderer $R, $data){
         global $ID;
         if($mode == 'xhtml'){
-            $R->info['cache'] = $data['cache'];
+            $R->info['cache'] &= $data['cache'];
             $R->doc .= $this->_gallery($data);
             return true;
         }elseif($mode == 'metadata'){
