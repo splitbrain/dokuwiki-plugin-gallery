@@ -273,7 +273,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                     'detail' => $url
                 );
             } else {
-                $files = array_combine($files,$this->_findImagesFromNS($url, $conf['mediadir'], $data['recursive']));
+                $files = array_merge($files,$this->_findImagesFromNS($url, $conf['mediadir'], $data['recursive']));
             }
         }
         return $files;
