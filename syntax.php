@@ -266,10 +266,13 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $files = array();
         foreach ($data['imagelist'] as $url) {
             if (preg_match('/^https?:\/\//i',$url)) {
+                list($url,$title) = explode('|',$url,2);
+                if (!$title) $title = basename($url);
                 $files[] = array(
                     'id'     => $url,
                     'isimg'  => true,
                     'file'   => basename($url),
+                    'title'  => $title,
                     'detail' => $url
                 );
             } else {
