@@ -68,7 +68,9 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         // namespace (including resolving relatives)
         if(!preg_match('/^https?:\/\//i',$ns)){
             $data['ns'] = resolve_id(getNS($ID),$ns);
-        }else{
+        } else if ($ns==='') {
+            $data['ns'] = 'USE_EXTERNAL_IMAGE_LIST';
+        } else {
             $data['ns'] =  $ns;
         }
 
@@ -92,10 +94,11 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['limit']    = 0;
         $data['offset']   = 0;
         $data['paginate'] = 0;
+        $data['imagelist'] = array();
 
         // parse additional options
         $params = $this->getConf('options').','.$params;
-        $params = preg_replace('/[,&\?]+/',' ',$params);
+        $params = preg_replace('/[,&\?\\n]+/',' ',$params);
         $params = explode(' ',$params);
         foreach($params as $param){
             if($param === '') continue;
@@ -105,6 +108,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 $data['sort'] = 'date';
             }elseif($param == 'modsort'){
                 $data['sort'] = 'mod';
+            }elseif(substr($param,0,1)=='#'){
+                $data['imagelist'][] = substr($param,1);
             }elseif(preg_match('/^=(\d+)$/',$param,$match)){
                 $data['limit'] = $match[1];
             }elseif(preg_match('/^\+(\d+)$/',$param,$match)){
@@ -224,6 +229,54 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         }
         return $files;
     }
+    
+    /**
+     * Finds all images matching a dokuwiki path
+     */
+    function _findImagesFromNS($ns, $mediadir, $recursive=false) {
+        $files = array();
+        $dir = utf8_encodeFN(str_replace(':','/',$ns);
+        // all possible images for the given namespace (or a single image)
+        if(is_file($mediadir.'/'.$dir)){
+            require_once(DOKU_INC.'inc/JpegMeta.php');
+            $files[] = array(
+                'id'    => $ns,
+                'isimg' => preg_match('/\.(jpe?g|gif|png)$/',$dir),
+                'file'  => basename($dir),
+                'mtime' => filemtime($mediadir.'/'.$dir),
+                'meta'  => new JpegMeta($mediadir.'/'.$dir)
+            );
+        }else{
+            $depth = $recursive ? 0 : 1;
+            search($files,
+                   $mediadir,
+                   'search_media',
+                   array('depth'=>$depth),
+                   $dir);
+        }
+        return $files;
+    }
+    
+    /**
+     * Creates the array of external images using the parameter list.
+     */
+    function _loadfromlist(&$data) {
+        global $conf;
+        $files = array();
+        foreach ($data['imagelist'] as $url) {
+            if (preg_match('/^https?:\/\//i',$url)) {
+                $files[] = array(
+                    'id'     => $url,
+                    'isimg'  => true,
+                    'file'   => basename($url),
+                    'detail' => $url
+                );
+            } else {
+                $files = array_combine($files,$this->_findImagesFromNS($url, $conf['mediadir'], $data['recursive']));
+            }
+        }
+        return $files;
+    }
 
     /**
      * Gather all photos matching the given criteria
@@ -232,32 +285,16 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         global $conf;
         $files = array();
 
-        // http URLs are supposed to be media RSS feeds
-        if(preg_match('/^https?:\/\//i',$data['ns'])){
+        // if we should use the list, otherwise http URLs are supposed to be media RSS feeds
+        if ($data['ns']==='USE_EXTERNAL_IMAGE_LIST') {
+            $files = $this->_loadfromlist($data);
+            $data['_single'] = false;
+        }elseif(preg_match('/^https?:\/\//i',$data['ns'])){
             $files = $this->_loadRSS($data['ns']);
             $data['_single'] = false;
         }else{
-            $dir = utf8_encodeFN(str_replace(':','/',$data['ns']));
-            // all possible images for the given namespace (or a single image)
-            if(is_file($conf['mediadir'].'/'.$dir)){
-                require_once(DOKU_INC.'inc/JpegMeta.php');
-                $files[] = array(
-                    'id'    => $data['ns'],
-                    'isimg' => preg_match('/\.(jpe?g|gif|png)$/',$dir),
-                    'file'  => basename($dir),
-                    'mtime' => filemtime($conf['mediadir'].'/'.$dir),
-                    'meta'  => new JpegMeta($conf['mediadir'].'/'.$dir)
-                );
-                $data['_single'] = true;
-            }else{
-                $depth = $data['recursive'] ? 0 : 1;
-                search($files,
-                       $conf['mediadir'],
-                       'search_media',
-                       array('depth'=>$depth),
-                       $dir);
-                $data['_single'] = false;
-            }
+            $files = $this->_findImagesFromNS($data['ns'], $conf['mediadir'], $data['recursive']);
+            $data['_single'] = count($files)<2;
         }
 
         // done, yet?
