@@ -6,6 +6,7 @@
  * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Joe Lapp <joe.lapp@pobox.com>
  * @author     Dave Doyle <davedoyle.canadalawbook.ca>
+ * @author     BilliAlpha (http://billi-dot.pe.hu)
  */
 
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
@@ -66,12 +67,12 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $ns = trim($ns);
 
         // namespace (including resolving relatives)
-        if(!preg_match('/^https?:\/\//i',$ns)){
-            $data['ns'] = resolve_id(getNS($ID),$ns);
-        } else if ($ns==='') {
+        if(preg_match('/^https?:\/\//i',$ns)){
+            $data['ns'] =  $ns;
+        } else if (!strlen($ns)) {
             $data['ns'] = 'USE_EXTERNAL_IMAGE_LIST';
         } else {
-            $data['ns'] =  $ns;
+            $data['ns'] = resolve_id(getNS($ID),$ns);
         }
 
         // set the defaults
@@ -235,7 +236,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
      */
     function _findImagesFromNS($ns, $mediadir, $recursive=false) {
         $files = array();
-        $dir = utf8_encodeFN(str_replace(':','/',$ns);
+        $dir = utf8_encodeFN(str_replace(':','/',$ns));
         // all possible images for the given namespace (or a single image)
         if(is_file($mediadir.'/'.$dir)){
             require_once(DOKU_INC.'inc/JpegMeta.php');
