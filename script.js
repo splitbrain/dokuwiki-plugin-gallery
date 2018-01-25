@@ -55,7 +55,10 @@ jQuery(function () {
     // hide all pages except the first one
     var $pages = jQuery('div.gallery_page');
     $pages.hide();
-    $pages.eq(0).show();
+    $pages.each(function(i,e) {
+        if(e.id.match(/_1$/))
+            $pages.eq(i).show();
+    });
 
     // attach page selector
     jQuery('a.gallery_pgsel').click(gallery_pageselect);
