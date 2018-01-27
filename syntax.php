@@ -6,6 +6,7 @@
  * @author     Andreas Gohr <andi@splitbrain.org>
  * @author     Joe Lapp <joe.lapp@pobox.com>
  * @author     Dave Doyle <davedoyle.canadalawbook.ca>
+ * @author     Piotr Gapinski <pijoter@gmail.com>
  */
 
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
@@ -42,7 +43,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
      * Connect pattern to lexer
      */
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\{\{gallery>[^}]*\}\}',$mode,'plugin_gallery');
+        $this->Lexer->addSpecialPattern('\{\{(?:gallery)>[^}]*\}\}',$mode,'plugin_gallery');
+        $this->Lexer->addSpecialPattern('<(?:gallery)>[^<]*</(?:gallery)>',$mode,'plugin_gallery');
     }
 
     /**
@@ -50,27 +52,24 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
      */
     function handle($match, $state, $pos, Doku_Handler $handler){
         global $ID;
-        $match = substr($match,10,-2); //strip markup from start and end
 
+        //strip markup from start and end
+        if($match[0] == "{"){
+            $match = substr($match,strpos($match,'>')+1,-2);
+        }else{
+            $match = strip_tags($match);
+        }
+
+        $match = trim($match,DOKU_LF);
+        $rows = explode("\n", $match);
         $data = array();
 
         $data['galid'] = substr(md5($match),0,4);
 
         // alignment
         $data['align'] = 0;
-        if(substr($match,0,1) == ' ') $data['align'] += 1;
+        if(substr($match,0,1) == ' ' || $rows[0][0] == ' ') $data['align'] += 1;
         if(substr($match,-1,1) == ' ') $data['align'] += 2;
-
-        // extract params
-        list($ns,$params) = explode('?',$match,2);
-        $ns = trim($ns);
-
-        // namespace (including resolving relatives)
-        if(!preg_match('/^https?:\/\//i',$ns)){
-            $data['ns'] = resolve_id(getNS($ID),$ns);
-        }else{
-            $data['ns'] =  $ns;
-        }
 
         // set the defaults
         $data['tw']       = $this->getConf('thumbnail_width');
@@ -82,19 +81,46 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['lightbox'] = false;
         $data['direct']   = false;
         $data['showname'] = false;
-        $data['showtitle'] = false;
+        $data['showtitle']= false;
         $data['reverse']  = false;
         $data['random']   = false;
         $data['cache']    = true;
         $data['crop']     = false;
         $data['recursive']= true;
         $data['sort']     = $this->getConf('sort');
-        $data['limit']    = 0;
+        $data['limit']    = $this->getConf('limit');
         $data['offset']   = 0;
-        $data['paginate'] = 0;
+        $data['paginate'] = $this->getConf('paginate');
+        $data['_include']  = array();
+        $data['_exclude']  = array();
+
+        $all_params = '';
+        foreach ($rows as $row) {
+            if(trim($row) === '') continue;
+            $row = trim($row,'{}');
+ 
+            // image title
+            list($ns,$title) = explode('|',trim($row),2);
+            $set = ($ns[0] == '-')? '_exclude': '_include';
+            if($ns[0] == '-' || $ns[0] == '+'){
+                $ns = substr($ns,1);
+            }
+            $ns = trim($ns);
+
+            if(!preg_match('/^https?:\/\//i',$ns)){
+                // extract params
+                list($ns,$params) = explode('?',trim($ns),2);
+                $ns = resolve_id(getNS($ID),$ns);
+            }
+
+            // remember sets
+            $data[$set][$ns] = $title;
+
+            if($params !== '') $all_params = $all_params.','.$params;
+        }
 
         // parse additional options
-        $params = $this->getConf('options').','.$params;
+        $params = $this->getConf('options').$all_params;
         $params = preg_replace('/[,&\?]+/',' ',$params);
         $params = explode(' ',$params);
         foreach($params as $param){
@@ -105,21 +131,27 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 $data['sort'] = 'date';
             }elseif($param == 'modsort'){
                 $data['sort'] = 'mod';
-            }elseif(preg_match('/^=(\d+)$/',$param,$match)){
-                $data['limit'] = $match[1];
-            }elseif(preg_match('/^\+(\d+)$/',$param,$match)){
-                $data['offset'] = $match[1];
+            }elseif($param == 'left'){
+                $data['align'] = 2;
+            }elseif($param == 'right'){
+                $data['align'] = 1;
+            }elseif($param == 'center'){
+                $data['align'] = 3;
+            }elseif(preg_match('/^=(\d+)$/',$param,$_match)){
+                $data['limit'] = $_match[1];
+            }elseif(preg_match('/^\+(\d+)$/',$param,$_match)){
+                $data['offset'] = $_match[1];
             }elseif(is_numeric($param)){
                 $data['cols'] = (int) $param;
-            }elseif(preg_match('/^~(\d+)$/',$param,$match)){
-                $data['paginate'] = $match[1];
-            }elseif(preg_match('/^(\d+)([xX])(\d+)$/',$param,$match)){
-                if($match[2] == 'X'){
-                    $data['iw'] = $match[1];
-                    $data['ih'] = $match[3];
+            }elseif(preg_match('/^~(\d+)$/',$param,$_match)){
+                $data['paginate'] = $_match[1];
+            }elseif(preg_match('/^(\d+)([xX])(\d+)$/',$param,$_match)){
+                if($_match[2] == 'X'){
+                    $data['iw'] = $_match[1];
+                    $data['ih'] = $_match[3];
                 }else{
-                    $data['tw'] = $match[1];
-                    $data['th'] = $match[3];
+                    $data['tw'] = $_match[1];
+                    $data['th'] = $_match[3];
                 }
             }elseif(strpos($param,'*') !== false){
                 $param = preg_quote($param,'/');
@@ -135,8 +167,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         }
 
         // implicit direct linking?
-        if($data['lightbox']) $data['direct']   = true;
-
+        if($data['lightbox']) $data['direct'] = true;
 
         return $data;
     }
@@ -147,15 +178,18 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     function render($mode, Doku_Renderer $R, $data){
         global $ID;
         if($mode == 'xhtml'){
-            $R->info['cache'] &= $data['cache'];
+            $R->info['cache'] = $data['cache'];
             $R->doc .= $this->_gallery($data);
             return true;
         }elseif($mode == 'metadata'){
-            $rel = p_get_metadata($ID,'relation',METADATA_RENDER_USING_CACHE);
-            $img = $rel['firstimage'];
-            if(empty($img)){
-                $files = $this->_findimages($data);
-                if(count($files)) $R->internalmedia($files[0]['id']);
+            // track media usage
+            $files = $this->_findgalleryimages($data);
+            if(count($files)){
+                $rel = p_get_metadata($ID,'relation',METADATA_RENDER_USING_CACHE);
+                if(empty($rel['firstimage']))
+                    $R->_firstImage($files[0]['id']);
+
+                foreach($files as $file) $R->_recordMediaUsage($file['id']);
             }
             return true;
         }
@@ -218,7 +252,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                     'height' => $enclosure->get_height(),
                     'mtime'  => $item->get_date('U'),
                     'ctime'  => $item->get_date('U'),
-                    'detail' => $link,
+                    'detail' => $link
                 );
             }
         }
@@ -228,27 +262,27 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     /**
      * Gather all photos matching the given criteria
      */
-    function _findimages(&$data){
+    function _findimages($data){
         global $conf;
         $files = array();
+ 
+        if(empty($data['_ns'])) return $files;
 
         // http URLs are supposed to be media RSS feeds
-        if(preg_match('/^https?:\/\//i',$data['ns'])){
-            $files = $this->_loadRSS($data['ns']);
-            $data['_single'] = false;
+        if(preg_match('/^https?:\/\//i',$data['_ns'])){
+            $files = $this->_loadRSS($data['_ns']);
         }else{
-            $dir = utf8_encodeFN(str_replace(':','/',$data['ns']));
+            $dir = utf8_encodeFN(str_replace(':','/',$data['_ns']));
             // all possible images for the given namespace (or a single image)
             if(is_file($conf['mediadir'].'/'.$dir)){
                 require_once(DOKU_INC.'inc/JpegMeta.php');
                 $files[] = array(
-                    'id'    => $data['ns'],
+                    'id'    => $data['_ns'],
                     'isimg' => preg_match('/\.(jpe?g|gif|png)$/',$dir),
                     'file'  => basename($dir),
                     'mtime' => filemtime($conf['mediadir'].'/'.$dir),
                     'meta'  => new JpegMeta($conf['mediadir'].'/'.$dir)
                 );
-                $data['_single'] = true;
             }else{
                 $depth = $data['recursive'] ? 0 : 1;
                 search($files,
@@ -256,14 +290,43 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                        'search_media',
                        array('depth'=>$depth),
                        $dir);
-                $data['_single'] = false;
             }
         }
 
+        // assign default title
+        if(!empty($data['_title'])){
+            foreach($files as &$file)
+                $file['title'] = $data['_title'];
+        }
+
+        return $files;
+    }
+
+    /**
+     * Combine photos into gallery
+     */
+    function _findgalleryimages(&$data){
+        $include = array();
+        foreach ($data[_include] as $ns=>$title) {
+            $data['_ns'] = $ns;
+            $data['_title'] = $title;
+            $f = $this->_findimages($data);
+            $include = array_merge($include,$f);
+        }
+
+        $exclude = array();
+        foreach ($data[_exclude] as $ns=>$title) {
+            $data['_ns'] = $ns;
+            $data['_title'] = $title;
+            $f = $this->_findimages($data);
+            $exclude = array_merge($exclude,$f);
+        }
+
+        $files = array_udiff($include,$exclude,array($this,'_idcompare'));
+ 
         // done, yet?
         $len = count($files);
         if(!$len) return $files;
-        if($data['single']) return $files;
 
         // filter images
         for($i=0; $i<$len; $i++){
@@ -292,42 +355,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             if($data['reverse']) $files = array_reverse($files);
         }
 
-        // limits and offsets?
-        if($data['offset']) $files = array_slice($files,$data['offset']);
-        if($data['limit']) $files = array_slice($files,0,$data['limit']);
-
-        return $files;
+	return $files;
     }
-
-    /**
-     * usort callback to sort by file lastmodified time
-     */
-    function _modsort($a,$b){
-        if($a['mtime'] < $b['mtime']) return -1;
-        if($a['mtime'] > $b['mtime']) return 1;
-        return strcmp($a['file'],$b['file']);
-    }
-
-    /**
-     * usort callback to sort by EXIF date
-     */
-    function _datesort($a,$b){
-        $da = $this->_meta($a,'cdate');
-        $db = $this->_meta($b,'cdate');
-        if($da < $db) return -1;
-        if($da > $db) return 1;
-        return strcmp($a['file'],$b['file']);
-    }
-
-    /**
-     * usort callback to sort by EXIF title
-     */
-    function _titlesort($a,$b){
-        $ta = $this->_meta($a,'title');
-        $tb = $this->_meta($b,'title');
-        return strcmp($ta,$tb);
-    }
-
 
     /**
      * Does the gallery formatting
@@ -337,7 +366,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         global $lang;
         $ret = '';
 
-        $files = $this->_findimages($data);
+        // build file list
+        $files = $this->_findgalleryimages($data);
 
         //anything found?
         if(!count($files)){
@@ -345,34 +375,35 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             return $ret;
         }
 
+        // limits and offsets
+        if($data['offset']) $files = array_slice($files,$data['offset']);
+        if($data['limit']) $files = array_slice($files,0,$data['limit']);
+
         // prepare alignment
         $align = '';
         $xalign = '';
-        if($data['align'] == 1){
-            $align  = ' gallery_right';
-            $xalign = ' align="right"';
-        }
-        if($data['align'] == 2){
-            $align  = ' gallery_left';
-            $xalign = ' align="left"';
-        }
-        if($data['align'] == 3){
-            $align  = ' gallery_center';
-            $xalign = ' align="center"';
-        }
-        if(!$data['_single']){
-            if(!$align) $align = ' gallery_center'; // center galleries on default
-            if(!$xalign) $xalign = ' align="center"';
+        switch($data['align']){
+            case 1:
+                $align  = ' gallery_right';
+                $xalign = ' align="right"';
+                break;
+            case 2:
+                $align  = ' gallery_left';
+                $xalign = ' align="left"';
+                break;
+            case 3:
+                $align  = ' gallery_center';
+                $xalign = ' align="center"';
+                break;
+            default:
+                $align = ' gallery_normal'; // "normal" left align galleries on default
+                $xalign = ' align="left"';
         }
 
         $page = 0;
 
         // build gallery
-        if($data['_single']){
-            $ret .= $this->_image($files[0],$data);
-            $ret .= $this->_showname($files[0],$data);
-            $ret .= $this->_showtitle($files[0],$data);
-        }elseif($data['cols'] > 0){ // format as table
+        if($data['cols'] > 0){ // format as table
             $close_pg = false;
 
             $i = 0;
@@ -386,8 +417,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
                 // new table?
                 if($i == 0 || ($data['paginate'] && ($i % $data['paginate'] == 0))){
-                    $ret .= '<table>';
-
+                     $ret .= '<table>';
                 }
 
                 // new row?
@@ -424,7 +454,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                     $ret .= '</div>';
                     $close_pg = false;
                 }
-
             }
 
             if ($close_tr){
@@ -472,8 +501,9 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         }
 
         // pagination links
+        // do not display if there is only one page
         $pgret = '';
-        if($page){
+        if($page > 1){
             $pgret .= '<div class="gallery_pages"><span>'.$this->getLang('pages').' </span>';
             for($j=1; $j<=$page; $j++){
                 $pgret .= '<a href="#gallery__'.$data['galid'].'_'.$j.'" class="gallery_pgsel button">'.$j.'</a> ';
@@ -518,6 +548,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $i['height']   = $h;
         $i['border']   = 0;
         $i['alt']      = $this->_meta($img,'title');
+        $i['longdesc'] = str_replace("\n",' ',$this->_meta($img,'desc'));
+        if(!$i['longdesc']) unset($i['longdesc']);
         $i['class']    = 'tn';
         $iatt = buildAttributes($i);
         $src  = ml($img['id'],$dim);
@@ -535,7 +567,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         //prepare link attributes
         $a           = array();
-        $a['title']  = $this->_meta($img,'title');
+        $a['title']  = (!empty($img['title']))? $img['title'] : $this->_meta($img,'title');
         $a['data-caption'] = trim(str_replace("\n",' ',$this->_meta($img,'desc')));
         if(!$a['data-caption']) unset($a['data-caption']);
         if($data['lightbox']){
@@ -564,7 +596,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     function _showname($img,$data){
         global $ID;
 
-        if(!$data['showname'] ) { return ''; }
+        if(!$data['showname']) { return ''; }
 
         //prepare link
         $lnk = ml($img['id'],array('id'=>$ID),false);
@@ -583,7 +615,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
     function _showtitle($img,$data){
         global $ID;
 
-        if(!$data['showtitle'] ) { return ''; }
+        if(!$data['showtitle']) { return ''; }
 
         //prepare link
         $lnk = ml($img['id'],array('id'=>$ID),false);
@@ -591,7 +623,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         // prepare output
         $ret  = '';
         $ret .= '<br /><a href="'.$lnk.'">';
-        $ret .= hsc($this->_meta($img,'title'));
+        $ret .= hsc((!empty($img['title']))? $img['title'] : $this->_meta($img,'title'));
         $ret .= '</a>';
         return $ret;
     }
@@ -608,7 +640,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
             switch($opt){
                 case 'title':
-                    return $img['meta']->getField('Simple.Title');
+                    $title = $img['meta']->getField('Simple.Title');
+                    return ($title !== '')? $title : noNS($img['id']);
                 case 'desc':
                     return $img['meta']->getField('Iptc.Caption');
                 case 'cdate':
@@ -618,14 +651,13 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 case 'height':
                     return $img['meta']->getField('File.Height');
 
-
                 default:
                     return '';
             }
 
         }else{
             // just return the array field
-            return $img[$opt];
+            return (isset($img[$opt]))? $img[$opt] : '';
         }
     }
 
@@ -658,6 +690,41 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         return $ratio;
     }
 
+    /**
+     * usort callback to sort by file lastmodified time
+     */
+    function _modsort($a,$b){
+        if($a['mtime'] < $b['mtime']) return -1;
+        if($a['mtime'] > $b['mtime']) return 1;
+        return strcmp($a['file'],$b['file']);
+    }
+
+    /**
+     * usort callback to sort by EXIF date
+     */
+    function _datesort($a,$b){
+        $da = $this->_meta($a,'cdate');
+        $db = $this->_meta($b,'cdate');
+        if($da < $db) return -1;
+        if($da > $db) return 1;
+        return strcmp($a['file'],$b['file']);
+    }
+
+    /**
+     * usort callback to sort by EXIF title
+     */
+    function _titlesort($a,$b){
+        $ta = $this->_meta($a,'title');
+        $tb = $this->_meta($b,'title');
+        return strcmp($ta,$tb);
+    }
+
+    /**
+     * udiff callback to remove duplicates
+     */
+    function _idcompare($a,$b){
+        return strcmp($a['id'],$b['id']);
+    }
 }
 
 //Setup VIM: ex: et ts=4 enc=utf-8 :
