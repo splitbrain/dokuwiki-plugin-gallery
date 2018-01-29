@@ -1,9 +1,7 @@
 <?php
 /**
- * English language file for gallery plugin
+ * Polish language file for gallery plugin
  *
- * @author Dmitry Baikov <dsbaikov@gmail.com>
- * @author Andreas Gohr <andi@splitbrain.org>
  * @author Piotr Gapinski <pijoter@gmail.com>
  */
 
