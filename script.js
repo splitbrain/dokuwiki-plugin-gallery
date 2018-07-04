@@ -1,5 +1,6 @@
 /* DOKUWIKI:include_once swipebox/js/jquery.swipebox.js */
 
+/* DOKUWIKI:include script/prosemirror.js */
 
 jQuery(function () {
 
