@@ -403,7 +403,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 $ret .= '</td>';
                 $i++;
 
-                // done with this row? cloase it
+                // done with this row? close it
                 $close_tr = true;
                 if($i % $data['cols'] == 0){
                     $ret .= '</tr>';
@@ -423,9 +423,10 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                     $ret .= '</table>';
                     $ret .= '</div>';
                     $close_pg = false;
+                    $i = 0; // reset counter to ensure next page is properly started
                 }
 
-            }
+            } // foreach
 
             if ($close_tr){
                 // add remaining empty cells
