@@ -72,7 +72,24 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
             $data['ns'] =  $ns;
         }
 
+        $data = array_merge(
+            $data,
+            $this->getDataFromParams($this->getConf('options').','.$params)
+        );
+
+        return $data;
+    }
+
+    /**
+     * Extract options from the provided parameter string
+     *
+     * @param string $params
+     *
+     * @return array associative array of the options defined in the string
+     */
+    public function getDataFromParams($params) {
         // set the defaults
+        $data = [];
         $data['tw']       = $this->getConf('thumbnail_width');
         $data['th']       = $this->getConf('thumbnail_height');
         $data['iw']       = $this->getConf('image_width');
@@ -94,7 +111,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         $data['paginate'] = 0;
 
         // parse additional options
-        $params = $this->getConf('options').','.$params;
         $params = preg_replace('/[,&\?]+/',' ',$params);
         $params = explode(' ',$params);
         foreach($params as $param){
@@ -136,7 +152,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         // implicit direct linking?
         if($data['lightbox']) $data['direct']   = true;
-
 
         return $data;
     }
