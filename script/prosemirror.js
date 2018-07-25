@@ -9,12 +9,15 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
      * @returns {{nodes: OrderedMap, marks: OrderedMap}} the updated nodes and marks
      */
     function addGallerySchema(nodes, marks) {
-
         nodes = nodes.addToEnd('dwplugin_gallery', {
             content: '', // there is no content here -- it is all attributes
             marks: '',
-            attrs: JSINFO.plugins.gallery.defaults,
-            draggable: true,
+            attrs: jQuery.extend(
+                {
+                    renderedHTML: { default: null },
+                },
+                JSINFO.plugins.gallery.defaults
+            ),
             group: 'protected_block', // may go into a block quote or list, but not into a table
         });
 
@@ -247,9 +250,35 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
     }
 
     /**
+     * Send this node's attributes to the server to get the rendered html back
+     *
+     * @param {object} attrs
+     * @param {GalleryNodeView} nodeview
+     */
+    function retrieveRenderedHTML(attrs, nodeview) {
+        const ajaxEndpoint = DOKU_BASE + 'lib/exe/ajax.php';
+        jQuery.post(ajaxEndpoint, {
+            'call': 'plugin_gallery_prosemirror',
+            'attrs': JSON.stringify(attrs),
+        }).done(function (data) {
+            var newAttrs = jQuery.extend({}, attrs);
+            newAttrs.renderedHTML = data;
+            nodeview.outerView.dispatch(
+                nodeview.outerView.state.tr
+                    .setNodeMarkup(
+                        nodeview.getPos(),
+                        null,
+                        newAttrs,
+                        nodeview.node.marks,
+                    ),
+            );
+        });
+    }
+
+    /**
      * Callback returning our NodeView
      *
-     * See https://prosemirror.net/docs/ref/#view.NodeView and
+     * See https://prosemirror.net/docs/ref/#view.NodeView
      *
      * @param {Node}       node
      * @param {EditorView} outerview
@@ -266,17 +295,23 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
             );
             AbstractNodeView.call(this, node, outerview, getPos);
         }
-
         GalleryNodeView.prototype = Object.create(AbstractNodeView.prototype);
         GalleryNodeView.prototype.constructor = GalleryNodeView;
 
+        /**
+         * This renders the node into the editor
+         *
+         * This method is called from the AbstractNodeView constructor and from our update method below
+         *
+         * @param attrs
+         */
         GalleryNodeView.prototype.renderNode = function (attrs) {
+            var thisView = this;
             if (!this.dom) {
-                this.dom = document.createElement('pre');
+                this.dom = document.createElement('div');
                 var $settingsButton = jQuery('<button>', { type: 'button', class: 'settings' }).text('settings');
-                var thisGalleryView = this;
                 $settingsButton.on('click', function () {
-                    thisGalleryView.form.show();
+                    thisView.form.show();
                 });
                 jQuery(this.dom)
                     .text('GalleryPlugin')
@@ -284,8 +319,33 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
                 ;
                 this.form.on('submit', handleFormSubmit.bind(this));
             }
-            jQuery(this.dom).css('text-align', attrs.align);
-            jQuery(this.dom).addClass('dwplugin dwplugin_gallery');
+            if (!attrs.renderedHTML) {
+                retrieveRenderedHTML(attrs, this);
+                jQuery(this.dom).addClass('dwplugin dwplugin_gallery');
+            } else {
+                var $renderedWrapper = jQuery(attrs.renderedHTML);
+                this.dom.innerHTML = $renderedWrapper.html();
+                this.dom.classList = $renderedWrapper.attr('class') + ' dwplugin_gallery nodeHasForm';
+                jQuery(this.dom).children().css('pointer-events', 'none');
+                jQuery(this.dom).on('click', function () {
+                    thisView.form.show();
+                });
+            }
+        };
+
+        /**
+         * This method is called by the prosemirror framework, if it exists
+         *
+         * see https://prosemirror.net/docs/ref/#view.NodeView.update
+         *
+         * @param {Node} node
+         * @return {boolean}
+         */
+        GalleryNodeView.prototype.update = function (node) {
+            this.node = node;
+            this.renderNode(node.attrs);
+
+            return true;
         };
 
         GalleryNodeView.prototype.selectNode = function () {

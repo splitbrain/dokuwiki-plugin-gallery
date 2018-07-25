@@ -16,6 +16,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'writeDefaultsToJSINFO');
         $controller->register_hook('PROSEMIRROR_RENDER_PLUGIN', 'BEFORE', $this, 'renderFromInstructions');
         $controller->register_hook('PROSEMIRROR_PARSE_UNKNOWN', 'BEFORE', $this, 'parseToSyntax');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'renderAttributesToHTML');
     }
 
     /**
@@ -134,6 +135,31 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
         $event->stopPropagation();
 
         $event->data['newNode'] = new GalleryNode($event->data['node'], $event->data['parent']);
+    }
+
+    /**
+     * Render the nodes attributes to html so it can be displayed in the editor
+     *
+     * Triggered by event: AJAX_CALL_UNKNOQN
+     *
+     * @param Doku_Event $event  event object
+     * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
+     *                           handler was registered]
+     *
+     * @return void
+     */
+    public function renderAttributesToHTML(Doku_Event $event, $param) {
+        if ($event->data !== 'plugin_gallery_prosemirror') {
+            return;
+        }
+        $event->preventDefault();
+        $event->stopPropagation();
+
+        global $INPUT;
+        $node = new GalleryNode(['attrs' => json_decode($INPUT->str('attrs'), true)], new \dokuwiki\plugin\prosemirror\parser\RootNode([]));
+        $syntax = $node->toSyntax();
+        $html = p_render('xhtml', p_get_instructions($syntax), $info);
+        echo $html;
     }
 }
 
