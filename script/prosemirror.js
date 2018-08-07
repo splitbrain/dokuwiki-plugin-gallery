@@ -21,7 +21,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
             group: 'protected_block', // may go into a block quote or list, but not into a table
         });
 
-        return { nodes, marks };
+        return { nodes: nodes, marks: marks };
     }
     window.Prosemirror.pluginSchemas.push(addGallerySchema);
 
@@ -234,7 +234,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
                 }
                 return acc;
             },
-            newAttrs,
+            newAttrs
         );
 
         this.form.hide();
@@ -244,8 +244,8 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
                     nodeStartPos,
                     null,
                     newAttrs,
-                    this.node.marks,
-                ),
+                    this.node.marks
+                )
         );
     }
 
@@ -269,8 +269,8 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
                         nodeview.getPos(),
                         null,
                         newAttrs,
-                        nodeview.node.marks,
-                    ),
+                        nodeview.node.marks
+                    )
             );
         });
     }
@@ -291,7 +291,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
         function GalleryNodeView(node, outerview, getPos) {
             this.form = new window.Prosemirror.classes.KeyValueForm(
                 LANG.plugins.gallery.title_dialog,
-                getGalleryFormFields(node.attrs),
+                getGalleryFormFields(node.attrs)
             );
             AbstractNodeView.call(this, node, outerview, getPos);
         }
@@ -375,7 +375,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
         };
         this.getMenuItem = function (schema) {
             return new window.Prosemirror.classes.MenuItem({
-                command: (state, dispatch) => {
+                command: function(state, dispatch) {
                     var isAllowed = window.Prosemirror.commands.setBlockTypeNoAttrCheck(schema.nodes.dwplugin_gallery)(state);
                     if (!isAllowed) {
                         return false;
@@ -387,12 +387,12 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
                                     acc[attr[0]] = attr[1].default;
                                     return acc;
                                 },
-                                {},
+                                {}
                             )
                         ;
                         var form = new window.Prosemirror.classes.KeyValueForm(
                             LANG.plugins.gallery.title_dialog,
-                            getGalleryFormFields(defaultAttributes),
+                            getGalleryFormFields(defaultAttributes)
                         );
                         form.show();
 
