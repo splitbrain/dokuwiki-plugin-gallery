@@ -176,7 +176,7 @@ class GalleryNode extends \dokuwiki\plugin\prosemirror\parser\Node {
      * @param $data
      * @param {Node} $parent
      */
-    public function __construct($data, $parent)
+    public function __construct($data, \dokuwiki\plugin\prosemirror\parser\Node $parent)
     {
         $this->parent = &$parent;
         $this->data = $data;
