@@ -341,7 +341,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         //anything found?
         if(!count($files)){
-            $ret .= '<div class="nothing">'.$lang['nothingfound'].'</div>';
+            $ret .= '<div class="nothing">'.$this->getLang('nothingfound').'</div>';
             return $ret;
         }
 
