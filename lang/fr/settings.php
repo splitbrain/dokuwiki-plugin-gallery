@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Dmitry Baikov <dsbaikov@gmail.com>
  * @author Emmanuel Dupin <seedfloyd@gmail.com>
  * @author NicolasFriedli <nicolas@theologique.ch>
