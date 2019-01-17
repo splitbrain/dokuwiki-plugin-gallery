@@ -7,3 +7,4 @@
  */
 $lang['pages']                 = 'Stranice galerije:';
 $lang['js']['addgal']          = 'Dodaj imenski prostor kao galeriju';
+$lang['nothingfound']          = 'Slike nisu pronađene.';
