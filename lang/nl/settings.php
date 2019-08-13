@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Hugo Smet <hugo.smet@outlook.com>
  */
 $lang['thumbnail_width']       = 'Breedte van het miniatuur beeld';
