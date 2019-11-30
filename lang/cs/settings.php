@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Tomáš Drbohlav <tom@drb.cz>
  * @author Jaroslav Lichtblau <jlichtblau@seznam.cz>
  */
