@@ -5,6 +5,6 @@
  *
  * @author Thien Hau <thienhausoftware@gmail.com>
  */
-$lang['pages']                 = 'Trang thư viên';
+$lang['pages']                 = 'Trang thư viện';
 $lang['js']['addgal']          = 'Thêm không gian tên làm thư viện';
 $lang['nothingfound']          = 'Không tìm thấy hình ảnh.';
