@@ -572,7 +572,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         // prepare output
         $ret  = '';
-        $ret .= '<br /><a href="'.$lnk.'">';
+        $ret .= '<a class="caption" href="'.$lnk.'">';
         $ret .= hsc($img['file']);
         $ret .= '</a>';
         return $ret;
@@ -591,7 +591,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
 
         // prepare output
         $ret  = '';
-        $ret .= '<br /><a href="'.$lnk.'">';
+        $ret .= '<a class="caption" href="'.$lnk.'">';
         $ret .= hsc($this->_meta($img,'title'));
         $ret .= '</a>';
         return $ret;

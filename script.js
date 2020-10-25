@@ -57,7 +57,13 @@ jQuery(function () {
     $pages.hide();
     $pages.eq(0).show();
 
+	var selector = 'a.gallery_pgsel';
+	jQuery(selector + ':first-of-type').addClass('active');
+    // attach page boldificator
+	jQuery(selector).on('click', function ( ) {
+		jQuery(selector).removeClass('active');
+		jQuery(this).addClass('active');
+	});
     // attach page selector
-    jQuery('a.gallery_pgsel').click(gallery_pageselect);
+	jQuery(selector).click(gallery_pageselect);
 });
-
