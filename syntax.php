@@ -192,7 +192,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 // non absolute links
                 $ilink = $enclosure->get_link();
                 if(!preg_match('/^https?:\/\//i',$ilink)){
-                    if($ilink{0} == '/'){
+                    if($ilink[0] == '/'){
                         $ilink = $host.$ilink;
                     }else{
                         $ilink = $host.$path.$ilink;
@@ -200,7 +200,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
                 }
                 $link = $item->link;
                 if(!preg_match('/^https?:\/\//i',$link)){
-                    if($link{0} == '/'){
+                    if($link[0] == '/'){
                         $link = $host.$link;
                     }else{
                         $link = $host.$path.$link;
