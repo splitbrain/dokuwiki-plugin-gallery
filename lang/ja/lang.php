@@ -2,7 +2,7 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
  * @author Nobuyuki Fukuyori <self@spumoni.org>
  */
 $lang['pages']                 = 'ギャラリー・ページ';
