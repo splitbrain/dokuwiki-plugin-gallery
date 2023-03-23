@@ -263,7 +263,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin {
         // done, yet?
         $len = count($files);
         if(!$len) return $files;
-        if($data['single']) return $files;
+        if(isset($data['single']) && $data['single']) return $files;
 
         // filter images
         for($i=0; $i<$len; $i++){
