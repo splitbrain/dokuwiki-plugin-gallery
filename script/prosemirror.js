@@ -14,15 +14,16 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
             marks: '',
             attrs: jQuery.extend(
                 {
-                    renderedHTML: { default: null },
+                    renderedHTML: {default: null},
                 },
                 JSINFO.plugins.gallery.defaults
             ),
             group: 'protected_block', // may go into a block quote or list, but not into a table
         });
 
-        return { nodes: nodes, marks: marks };
+        return {nodes: nodes, marks: marks};
     }
+
     window.Prosemirror.pluginSchemas.push(addGallerySchema);
 
     /**
@@ -295,6 +296,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
             );
             AbstractNodeView.call(this, node, outerview, getPos);
         }
+
         GalleryNodeView.prototype = Object.create(AbstractNodeView.prototype);
         GalleryNodeView.prototype.constructor = GalleryNodeView;
 
@@ -309,7 +311,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
             var thisView = this;
             if (!this.dom) {
                 this.dom = document.createElement('div');
-                var $settingsButton = jQuery('<button>', { type: 'button', class: 'settings' }).text('settings');
+                var $settingsButton = jQuery('<button>', {type: 'button', class: 'settings'}).text('settings');
                 $settingsButton.on('click', function () {
                     thisView.form.show();
                 });
@@ -359,6 +361,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
 
         return new GalleryNodeView(node, outerview, getPos);
     }
+
     window.Prosemirror.pluginNodeViews.dwplugin_gallery = dwplugin_gallery;
 
     /**
@@ -375,7 +378,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
         };
         this.getMenuItem = function (schema) {
             return new window.Prosemirror.classes.MenuItem({
-                command: function(state, dispatch) {
+                command: function (state, dispatch) {
                     var isAllowed = window.Prosemirror.commands.setBlockTypeNoAttrCheck(schema.nodes.dwplugin_gallery)(state);
                     if (!isAllowed) {
                         return false;
@@ -418,5 +421,6 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', function () {
             });
         };
     }
+
     window.Prosemirror.pluginMenuItemDispatchers.push(new GalleryMenuItemDispatcher());
 });
