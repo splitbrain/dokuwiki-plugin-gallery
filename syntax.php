@@ -248,7 +248,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
             $dir = utf8_encodeFN(str_replace(':', '/', $data['ns']));
             // all possible images for the given namespace (or a single image)
             if (is_file($conf['mediadir'] . '/' . $dir)) {
-                require_once(DOKU_INC . 'inc/JpegMeta.php');
                 $files[] = array(
                     'id' => $data['ns'],
                     'isimg' => preg_match('/\.(jpe?g|gif|png)$/', $dir),
