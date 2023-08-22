@@ -1,3 +1,53 @@
+div.plugin-gallery {
+    max-width: 100%;
+    box-sizing: border-box;
+
+    div.gallery-page {
+        display: grid;
+        // column setup happens in Formatter::formatPage()
+        gap: 1em;
+        width: fit-content;
+        max-width: 100%;
+
+        figure {
+            text-align: center;
+            border: 1px solid @ini_border;
+            margin: 0;
+            padding: 0.4em;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            figcaption {
+                margin-top: 0.4em;
+                a {
+                    display: block;
+
+                    &.gallery-title {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+
+    &.align-left {
+        float: left;
+        margin-right: 1em;
+    }
+    &.align-right {
+        float: right;
+        margin-left: 1em;
+    }
+    &.align-center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+
+
+
 div.dokuwiki div.gallery table {
     border: none;
 }

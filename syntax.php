@@ -53,8 +53,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
         $options->galleryID = substr(md5($match), 0, 4);
 
         // alignment
-        if (substr($match, 0, 1) == ' ') $options->align += Options::ALIGN_LEFT;
-        if (substr($match, -1, 1) == ' ') $options->align += Options::ALIGN_RIGHT;
+        if (substr($match, 0, 1) == ' ') $options->align += Options::ALIGN_RIGHT;
+        if (substr($match, -1, 1) == ' ') $options->align += Options::ALIGN_LEFT;
 
         // extract src and params
         list($src, $params) = sexplode('?', $match, 2);
@@ -94,12 +94,11 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
             $R->doc .= $formatter->format($gallery);
 
             // FIXME next steps:
+            // * fix pagination CSS and JS
             // * implement minimal standard renderer for all renderers (just inline thumbnails with links)
             // * maybe implement PDF renderer separately from XHTML
             // * adjust lightbox script
-            // * redo CSS
             // * add more unit tests
-
 
             return true;
         } elseif ($mode == 'metadata') {

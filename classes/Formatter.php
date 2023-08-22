@@ -23,14 +23,29 @@ class Formatter
      */
     public function format(AbstractGallery $gallery)
     {
-        $html = '<div class="plugin-gallery" id="gallery__' . $this->options->galleryID . '">';
+        $attr = [
+            'id' => 'plugin__gallery_' . $this->options->galleryID,
+            'class' => 'plugin-gallery',
+        ];
 
+        switch ($this->options->align) {
+            case Options::ALIGN_LEFT:
+                $attr['class'] .= ' align-left';
+                break;
+            case Options::ALIGN_RIGHT:
+                $attr['class'] .= ' align-right';
+                break;
+            case Options::ALIGN_CENTER:
+                $attr['class'] .= ' align-center';
+                break;
+        }
+
+        $html = '<div ' . buildAttributes($attr, true) . '>';
         $images = $gallery->getImages();
         $pages = $this->paginate($images);
         foreach ($pages as $page => $images) {
             $html .= $this->formatPage($images, $page);
         }
-
         $html .= '</div>';
         return $html;
     }
@@ -61,7 +76,21 @@ class Formatter
      */
     protected function formatPage($images, int $page)
     {
-        $html = '<div class="gallery_page" id="gallery__' . $this->options->galleryID . '_' . $page . '">';
+        $attr = [
+            'class' => 'gallery-page',
+            'id' => 'gallery__' . $this->options->galleryID . '_' . $page,
+        ];
+
+        // define the grid, either fixed columns that shrink, or fixed width that wrap
+        $colwidth = $this->options->thumbnailWidth . 'px';
+        if($this->options->columns) {
+            $maxwidth = '(100% / ' . $this->options->columns . ') - 1em';
+            $colwidth = 'min(' . $colwidth . ', ' . $maxwidth . ')';
+        }
+        $cols = $this->options->columns ?: 'auto-fill';
+        $attr['style'] = 'grid-template-columns: repeat(' . $cols . ', ' . $colwidth . ')';
+
+        $html = '<div ' . buildAttributes($attr) . '>';
         foreach ($images as $image) {
             $html .= $this->formatImage($image);
         }
@@ -96,7 +125,8 @@ class Formatter
         // figure properties
         $fig = [];
         $fig['class'] = 'gallery-image';
-        $fig['style'] = 'width: ' . $w . 'px;';
+        $fig['style'] = 'max-width: ' . $this->options->thumbnailWidth . 'px; ';
+        //.'min-height: ' . $this->options->thumbnailHeight . 'px;';
 
         # differentiate between the URL for the lightbox and the URL for details
         # using a data-attribute
@@ -114,14 +144,6 @@ class Formatter
 
         if ($this->options->showtitle || $this->options->showname) {
             $html .= '<figcaption>';
-            if ($this->options->showname) {
-                $a = [
-                    'href' => $this->getDetailLink($image),
-                    'class' => 'gallery-filename',
-                    'title' => $image->getFilename(),
-                ];
-                $html .= '<a ' . buildAttributes($a) . '>' . hsc($image->getFilename()) . '</a>';
-            }
             if ($this->options->showtitle) {
                 $a = [
                     'href' => $this->getDetailLink($image),
@@ -129,6 +151,14 @@ class Formatter
                     'title' => $image->getTitle(),
                 ];
                 $html .= '<a ' . buildAttributes($a) . '>' . hsc($image->getTitle()) . '</a>';
+            }
+            if ($this->options->showname) {
+                $a = [
+                    'href' => $this->getDetailLink($image),
+                    'class' => 'gallery-filename',
+                    'title' => $image->getFilename(),
+                ];
+                $html .= '<a ' . buildAttributes($a) . '>' . hsc($image->getFilename()) . '</a>';
             }
             $html .= '</figcaption>';
         }
