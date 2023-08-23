@@ -2,6 +2,8 @@
 
 namespace dokuwiki\plugin\gallery\classes;
 
+use dokuwiki\Utf8\Sort;
+
 abstract class AbstractGallery
 {
     /** @var Image[] */
@@ -45,7 +47,7 @@ abstract class AbstractGallery
         switch ($this->options->sort) {
             case Options::SORT_FILE:
                 usort($images, function ($a, $b) {
-                    return strcmp($a->getFilename(), $b->getFilename());
+                    return Sort::strcmp($a->getFilename(), $b->getFilename());
                 });
                 break;
             case Options::SORT_CTIME:
@@ -60,7 +62,7 @@ abstract class AbstractGallery
                 break;
             case Options::SORT_TITLE:
                 usort($images, function ($a, $b) {
-                    return strcmp($a->getTitle(), $b->getTitle());
+                    return Sort::strcmp($a->getTitle(), $b->getTitle());
                 });
                 break;
             case Options::SORT_RANDOM:
