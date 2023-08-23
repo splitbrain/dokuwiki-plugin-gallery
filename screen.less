@@ -18,6 +18,10 @@ div.plugin-gallery {
             flex-direction: column;
             justify-content: space-between;
 
+            img {
+                max-width: 100%;
+            }
+
             figcaption {
                 margin-top: 0.4em;
                 a {
@@ -31,6 +35,9 @@ div.plugin-gallery {
         }
     }
 
+    &.align-full {
+        width: 100%;
+    }
     &.align-left {
         float: left;
         margin-right: 1em;

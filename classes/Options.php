@@ -11,7 +11,7 @@ class Options
     const SORT_TITLE = 'title';
     const SORT_RANDOM = 'random';
 
-    const ALIGN_NONE = 0;
+    const ALIGN_FULL = 0;
     const ALIGN_LEFT = 1;
     const ALIGN_RIGHT = 2;
     const ALIGN_CENTER = 3;
@@ -36,7 +36,7 @@ class Options
     public int $limit = 0;
     public int $offset = 0;
     public int $paginate = 0;
-    public int $align = self::ALIGN_NONE;
+    public int $align = self::ALIGN_FULL;
 
     /**
      * Options constructor.

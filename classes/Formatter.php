@@ -29,6 +29,9 @@ class Formatter
         ];
 
         switch ($this->options->align) {
+            case Options::ALIGN_FULL;
+                $attr['class'] .= ' align-full';
+                break;
             case Options::ALIGN_LEFT:
                 $attr['class'] .= ' align-left';
                 break;
@@ -81,12 +84,19 @@ class Formatter
             'id' => 'gallery__' . $this->options->galleryID . '_' . $page,
         ];
 
-        // define the grid, either fixed columns that shrink, or fixed width that wrap
+        // define the grid
         $colwidth = $this->options->thumbnailWidth . 'px';
-        if($this->options->columns) {
+        if($this->options->align === Options::ALIGN_FULL) {
+            // full width will auto fill with columns but scale them up if needed
+            $colwidth = 'minmax('.$colwidth.', 1fr)';
+        } else if($this->options->columns) {
+            // with a fixed number of columns we calculate the max width for each
             $maxwidth = '(100% / ' . $this->options->columns . ') - 1em';
             $colwidth = 'min(' . $colwidth . ', ' . $maxwidth . ')';
         }
+
+
+
         $cols = $this->options->columns ?: 'auto-fill';
         $attr['style'] = 'grid-template-columns: repeat(' . $cols . ', ' . $colwidth . ')';
 
@@ -104,6 +114,8 @@ class Formatter
 
         // thumbnail image properties
         list($w, $h) = $this->getThumbnailSize($image);
+        $w *= 2; // retina
+        $h *= 2;
         $img = [];
         $img['width'] = $w;
         $img['height'] = $h;
@@ -125,8 +137,9 @@ class Formatter
         // figure properties
         $fig = [];
         $fig['class'] = 'gallery-image';
-        $fig['style'] = 'max-width: ' . $this->options->thumbnailWidth . 'px; ';
-        //.'min-height: ' . $this->options->thumbnailHeight . 'px;';
+        if($this->options->align !== Options::ALIGN_FULL) {
+            $fig['style'] = 'max-width: ' . $this->options->thumbnailWidth . 'px; ';
+        }
 
         # differentiate between the URL for the lightbox and the URL for details
         # using a data-attribute
