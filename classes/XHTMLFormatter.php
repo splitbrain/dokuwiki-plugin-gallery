@@ -3,27 +3,13 @@
 namespace dokuwiki\plugin\gallery\classes;
 
 
-class Formatter
+class XHTMLFormatter extends BasicFormatter
 {
-    protected Options $options;
 
-    /**
-     * @param Options $options
-     */
-    public function __construct(Options $options)
-    {
-        $this->options = $options;
-    }
+    // region Main Render Functions
 
-    // region Main Formatters
-
-    /**
-     * Format the whole Gallery
-     *
-     * @param AbstractGallery $gallery
-     * @return string
-     */
-    public function format(AbstractGallery $gallery)
+    /** @inheritdoc */
+    public function render(AbstractGallery $gallery)
     {
         $attr = [
             'id' => 'plugin__gallery_' . $this->options->galleryID,
@@ -45,46 +31,44 @@ class Formatter
                 break;
         }
 
-        $html = '<div ' . buildAttributes($attr, true) . '>';
+        $this->renderer->doc .= '<div ' . buildAttributes($attr, true) . '>';
         $images = $gallery->getImages();
         $pages = $this->paginate($images);
         foreach ($pages as $page => $images) {
-            $html .= $this->formatPage($images, $page);
+            $this->renderPage($images, $page);
         }
-        $html .= $this->formatPageSelector($pages);
-        $html .= '</div>';
-        return $html;
+        $this->renderPageSelector($pages);
+        $this->renderer->doc .= '</div>';
     }
 
     /**
-     * Format the page selector
+     * Render the page selector
      *
      * @param $pages
-     * @return string
+     * @return void
      */
-    protected function formatPageSelector($pages)
+    protected function renderPageSelector($pages)
     {
-        if (count($pages) <= 1) return '';
+        if (count($pages) <= 1) return;
 
         $plugin = plugin_load('syntax', 'gallery');
 
-        $html = '<div class="gallery-page-selector">';
-        $html .= '<span>' . $plugin->getLang('pages') . ' </span>';
+        $this->renderer->doc .= '<div class="gallery-page-selector">';
+        $this->renderer->doc .= '<span>' . $plugin->getLang('pages') . ' </span>';
         foreach (array_keys($pages) as $pid) {
-            $html .= '<a href="#gallery__' . $this->options->galleryID . '_' . $pid . '">' . ($pid + 1) . '</a> ';
+            $this->renderer->doc .= '<a href="#gallery__' . $this->options->galleryID . '_' . $pid . '">' . ($pid + 1) . '</a> ';
         }
-        $html .= '</div>';
-        return $html;
+        $this->renderer->doc .= '</div>';
     }
 
     /**
-     * Format the given images into a gallery page
+     * Render the given images into a gallery page
      *
      * @param Image[] $images
      * @param int $page The page number
-     * @return string
+     * @return void
      */
-    protected function formatPage($images, int $page)
+    protected function renderPage($images, int $page)
     {
         $attr = [
             'class' => 'gallery-page',
@@ -108,21 +92,15 @@ class Formatter
         }
         $attr['style'] = 'grid-template-columns: repeat(' . $cols . ', ' . $colwidth . ')';
 
-        $html = '<div ' . buildAttributes($attr) . '>';
+        $this->renderer->doc .= '<div ' . buildAttributes($attr) . '>';
         foreach ($images as $image) {
-            $html .= $this->formatImage($image);
+            $this->renderImage($image);
         }
-        $html .= '</div>';
-        return $html;
+        $this->renderer->doc .= '</div>';
     }
 
-    /**
-     * Format a single thumbnail image in the gallery
-     *
-     * @param Image $image
-     * @return string
-     */
-    protected function formatImage(Image $image)
+    /** @inheritdoc */
+    protected function renderImage(Image $image)
     {
         global $ID;
 
@@ -145,7 +123,7 @@ class Formatter
         if ($this->options->lightbox) {
             // double escape for lightbox:
             $a['data-caption'] = join(' &ndash; ', array_filter([
-                '<b>'.hsc($image->getTitle()).'</b>',
+                '<b>' . hsc($image->getTitle()) . '</b>',
                 hsc($image->getDescription())
             ]));
             $a['class'] = "lightbox JSnocheck";
@@ -187,29 +165,12 @@ class Formatter
         }
 
         $html .= '</figure>';
-        return $html;
+        $this->renderer->doc .= $html;
     }
 
     // endregion
 
     // region Utilities
-
-    /**
-     * Create an array of pages for the given images
-     *
-     * @param Image[] $images
-     * @return Image[][]
-     */
-    protected function paginate($images)
-    {
-        if ($this->options->paginate) {
-            $pages = array_chunk($images, $this->options->paginate);
-        } else {
-            $pages = [$images];
-        }
-
-        return $pages;
-    }
 
     /**
      * Access the detail link for this image
@@ -257,46 +218,20 @@ class Formatter
     }
 
     /**
-     * Calculate the thumbnail size
-     */
-    protected function getThumbnailSize(Image $image)
-    {
-        $crop = $this->options->crop;
-        if (!$image->getWidth() || !$image->getHeight()) {
-            $crop = true;
-        }
-        if (!$crop) {
-            list($thumbWidth, $thumbHeight) = $this->fitBoundingBox(
-                $image->getWidth(),
-                $image->getHeight(),
-                $this->options->thumbnailWidth,
-                $this->options->thumbnailHeight
-            );
-        } else {
-            $thumbWidth = $this->options->thumbnailWidth;
-            $thumbHeight = $this->options->thumbnailHeight;
-        }
-        return [$thumbWidth, $thumbHeight];
-    }
-
-
-    /**
-     * Calculate the size of a thumbnail to fit into a bounding box
+     * Create an array of pages for the given images
      *
-     * @param int $imgWidth
-     * @param int $imgHeight
-     * @param int $bBoxWidth
-     * @param int $bBoxHeight
-     * @return int[]
+     * @param Image[] $images
+     * @return Image[][]
      */
-    protected function fitBoundingBox($imgWidth, $imgHeight, $bBoxWidth, $bBoxHeight)
+    protected function paginate($images)
     {
-        $scale = min($bBoxWidth / $imgWidth, $bBoxHeight / $imgHeight);
+        if ($this->options->paginate) {
+            $pages = array_chunk($images, $this->options->paginate);
+        } else {
+            $pages = [$images];
+        }
 
-        $width = round($imgWidth * $scale);
-        $height = round($imgHeight * $scale);
-
-        return [$width, $height];
+        return $pages;
     }
 
     // endregion

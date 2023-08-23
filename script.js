@@ -59,6 +59,7 @@ jQuery(function () {
         captionType: 'data',
         captionsData: 'caption',
         captionPosition: 'outside',
+        captionHTML: true, // we allow HTML and double escape in the formatter
         alertError: false,
         fileExt: false,
     });

@@ -1,8 +1,9 @@
 <?php
 
 use dokuwiki\File\PageResolver;
+use dokuwiki\plugin\gallery\classes\BasicFormatter;
 use dokuwiki\plugin\gallery\classes\FeedGallery;
-use dokuwiki\plugin\gallery\classes\Formatter;
+use dokuwiki\plugin\gallery\classes\XHTMLFormatter;
 use dokuwiki\plugin\gallery\classes\NamespaceGallery;
 use dokuwiki\plugin\gallery\classes\Options;
 
@@ -77,8 +78,6 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
     /** @inheritdoc */
     public function render($mode, Doku_Renderer $R, $data)
     {
-        global $ID;
-
         [$src, $options] = $data;
 
         if (preg_match('/^https?:\/\//i', $src)) {
@@ -87,30 +86,16 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
             $gallery = new NamespaceGallery($src, $options);
         }
 
-
-        if ($mode == 'xhtml') {
-            $R->info['cache'] = $options->cache;
-            $formatter = new Formatter($options);
-            $R->doc .= $formatter->format($gallery);
-
-            // FIXME next steps:
-            // * implement minimal standard renderer for all renderers (just inline thumbnails with links)
-            // * maybe implement PDF renderer separately from XHTML
-            // * add more unit tests
-
-            return true;
-        } elseif ($mode == 'metadata') {
-            // render the first image of the gallery, to ensure it will be used as first image if needed
-            $images = $gallery->getImages();
-            if (count($images)) {
-                if ($images[0]->isExternal()) {
-                    $R->externalmedia($images[0]->getSrc());
-                } else {
-                    $R->internalmedia($images[0]->getSrc());
-                }
-            }
-            return true;
+        $R->info['cache'] = $options->cache;
+        switch ($mode) {
+            case 'xhtml':
+                $formatter = new XHTMLFormatter($R, $options);
+                break;
+            // FIXME additional specialized Formatters could be added here (PDF, ODT)
+            default:
+                $formatter = new BasicFormatter($R, $options);
         }
-        return false;
+        $formatter->render($gallery);
+        return true;
     }
 }
