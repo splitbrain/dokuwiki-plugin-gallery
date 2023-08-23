@@ -26,6 +26,7 @@ class Options
     public string $filter = '';
     public bool $lightbox = false;
     public bool $direct = false;
+    public bool $showcaption = false;
     public bool $showname = false;
     public bool $showtitle = false;
     public bool $reverse = false;

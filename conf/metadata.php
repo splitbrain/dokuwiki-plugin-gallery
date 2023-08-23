@@ -23,5 +23,15 @@ $meta['sort'] = array(
         Options::SORT_RANDOM,
     )
 );
-$meta['options'] = array('multicheckbox', '_choices' => array('cache', 'crop', 'direct', 'lightbox', 'reverse', 'showname', 'showtitle'));
+$meta['options'] = array('multicheckbox', '_choices' => array(
+    'cache',
+    'crop',
+    'direct',
+    'lightbox',
+    'recursive',
+    'reverse',
+    'showcaption',
+    'showname',
+    'showtitle',
+));
 

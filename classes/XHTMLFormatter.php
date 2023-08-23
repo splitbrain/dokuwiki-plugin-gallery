@@ -153,6 +153,12 @@ class XHTMLFormatter extends BasicFormatter
                 ];
                 $html .= '<a ' . buildAttributes($a) . '>' . hsc($image->getTitle()) . '</a>';
             }
+            if ($this->options->showcaption) {
+                $p = [
+                    'class' => 'gallery-caption',
+                ];
+                $html .= '<p' . buildAttributes($p) . '>' . hsc($image->getDescription()) . '</p>';
+            }
             if ($this->options->showname) {
                 $a = [
                     'href' => $this->getDetailLink($image),
