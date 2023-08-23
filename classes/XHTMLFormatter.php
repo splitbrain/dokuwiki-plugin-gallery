@@ -186,11 +186,13 @@ class XHTMLFormatter extends BasicFormatter
      */
     protected function getDetailLink(Image $image)
     {
+        global $ID;
+
         if ($image->getDetaillink()) {
             // external image
             return $image->getDetaillink();
         } else {
-            return ml($image->getSrc(), '', $this->options->direct, '&');
+            return ml($image->getSrc(), ['id' => $ID], $this->options->direct, '&');
         }
     }
 
