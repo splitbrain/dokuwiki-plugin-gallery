@@ -4,9 +4,9 @@ use dokuwiki\File\PageResolver;
 use dokuwiki\plugin\gallery\classes\BasicFormatter;
 use dokuwiki\plugin\gallery\classes\FeedGallery;
 use dokuwiki\plugin\gallery\classes\ListGallery;
-use dokuwiki\plugin\gallery\classes\XHTMLFormatter;
 use dokuwiki\plugin\gallery\classes\NamespaceGallery;
 use dokuwiki\plugin\gallery\classes\Options;
+use dokuwiki\plugin\gallery\classes\XHTMLFormatter;
 
 /**
  * Embed an image gallery
@@ -81,24 +81,30 @@ class syntax_plugin_gallery_main extends DokuWiki_Syntax_Plugin
     {
         [$src, $options] = $data;
 
-        if (is_array($src)) {
-            $gallery = new ListGallery($src, $options);
-        } elseif (preg_match('/^https?:\/\//i', $src)) {
-            $gallery = new FeedGallery($src, $options);
-        } else {
-            $gallery = new NamespaceGallery($src, $options);
-        }
+        try {
 
-        $R->info['cache'] = $options->cache;
-        switch ($mode) {
-            case 'xhtml':
-                $formatter = new XHTMLFormatter($R, $options);
-                break;
-            // FIXME additional specialized Formatters could be added here (PDF, ODT)
-            default:
-                $formatter = new BasicFormatter($R, $options);
+            if (is_array($src)) {
+                $gallery = new ListGallery($src, $options);
+            } elseif (preg_match('/^https?:\/\//i', $src)) {
+                $gallery = new FeedGallery($src, $options);
+            } else {
+                $gallery = new NamespaceGallery($src, $options);
+            }
+
+            $R->info['cache'] = $options->cache;
+            switch ($mode) {
+                case 'xhtml':
+                    $formatter = new XHTMLFormatter($R, $options);
+                    break;
+                // FIXME additional specialized Formatters could be added here (PDF, ODT)
+                default:
+                    $formatter = new BasicFormatter($R, $options);
+            }
+            $formatter->render($gallery);
+        } catch (Exception $e) {
+            msg(hsc($e->getMessage()), -1);
+            $R->cdata($this->getLang('fail'));
         }
-        $formatter->render($gallery);
         return true;
     }
 }
