@@ -78,6 +78,12 @@ div.plugin-gallery {
         a {
             display: inline-block;
             padding: 0.2em 0.4em;
+            border: 1px solid transparent;
+
+            &.active {
+                border: 1px solid @ini_border;
+                border-radius: 0.4em;
+            }
         }
     }
 }

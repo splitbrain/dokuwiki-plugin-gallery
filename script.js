@@ -37,11 +37,16 @@ jQuery(function () {
     (function() {
         // hide all pages except the first one in each gallery
         jQuery('.plugin-gallery').each(function() {
-            jQuery(this).find('.gallery-page').hide().eq(0).show();
+            const $gallery = jQuery(this);
+            $gallery.find('.gallery-page').hide().eq(0).show();
+            $gallery.find('.gallery-page-selector a').eq(0).addClass('active');
         });
         // attach page selector
         jQuery('.gallery-page-selector a').click(function(e) {
-            const $gallery = jQuery(this).closest('.plugin-gallery');
+            const $self = jQuery(this);
+            $self.siblings().removeClass('active');
+            $self.addClass('active');
+            const $gallery = $self.closest('.plugin-gallery');
             $gallery.find('.gallery-page').hide();
             $gallery.find(e.target.hash).show();
             e.preventDefault();
