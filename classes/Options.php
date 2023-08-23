@@ -73,6 +73,8 @@ class Options
                 $this->sort = self::SORT_CTIME;
             } elseif ($param == 'modsort') {
                 $this->sort = self::SORT_MTIME;
+            } elseif ($param == 'random') {
+                $this->sort = self::SORT_RANDOM;
             } elseif ($param == 'left') {
                 $this->align = self::ALIGN_LEFT;
             } elseif ($param == 'right') {
