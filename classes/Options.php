@@ -73,6 +73,14 @@ class Options
                 $this->sort = self::SORT_CTIME;
             } elseif ($param == 'modsort') {
                 $this->sort = self::SORT_MTIME;
+            } elseif ($param == 'left') {
+                $this->align = self::ALIGN_LEFT;
+            } elseif ($param == 'right') {
+                $this->align = self::ALIGN_RIGHT;
+            } elseif ($param == 'center') {
+                $this->align = self::ALIGN_CENTER;
+            } elseif ($param == 'full') {
+                $this->align = self::ALIGN_FULL;
             } elseif (preg_match('/^=(\d+)$/', $param, $match)) {
                 $this->limit = (int)$match[1];
             } elseif (preg_match('/^\+(\d+)$/', $param, $match)) {
