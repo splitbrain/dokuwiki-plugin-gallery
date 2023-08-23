@@ -9,7 +9,10 @@ class FeedGallery extends AbstractGallery
     protected $feedHost;
     protected $feedPath;
 
-    /** @inheritdoc */
+    /**
+     * @inheritdoc
+     * @param string $url
+     */
     public function __construct($url, Options $options)
     {
         parent::__construct($url, $options);

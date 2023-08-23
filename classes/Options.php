@@ -45,7 +45,7 @@ class Options
     public function __construct()
     {
         // load options from config
-        $plugin = plugin_load('syntax', 'gallery');
+        $plugin = plugin_load('syntax', 'gallery_main');
         $this->thumbnailWidth = $plugin->getConf('thumbnail_width');
         $this->thumbnailHeight = $plugin->getConf('thumbnail_height');
         $this->lightboxWidth = $plugin->getConf('image_width');

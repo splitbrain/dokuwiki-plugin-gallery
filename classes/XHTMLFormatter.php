@@ -51,7 +51,7 @@ class XHTMLFormatter extends BasicFormatter
     {
         if (count($pages) <= 1) return;
 
-        $plugin = plugin_load('syntax', 'gallery');
+        $plugin = plugin_load('syntax', 'gallery_main');
 
         $this->renderer->doc .= '<div class="gallery-page-selector">';
         $this->renderer->doc .= '<span>' . $plugin->getLang('pages') . ' </span>';
@@ -157,7 +157,7 @@ class XHTMLFormatter extends BasicFormatter
                 $p = [
                     'class' => 'gallery-caption',
                 ];
-                $html .= '<p' . buildAttributes($p) . '>' . hsc($image->getDescription()) . '</p>';
+                $html .= '<div ' . buildAttributes($p) . '>' . hsc($image->getDescription()) . '</div>';
             }
             if ($this->options->showname) {
                 $a = [

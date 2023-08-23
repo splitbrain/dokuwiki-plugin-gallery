@@ -4,8 +4,6 @@ namespace dokuwiki\plugin\gallery\classes;
 
 abstract class AbstractGallery
 {
-
-
     /** @var Image[] */
     protected $images = [];
     /** @var Options */
@@ -14,7 +12,7 @@ abstract class AbstractGallery
     /**
      * Initialize the Gallery
      *
-     * @param string $src The source from where to get the images
+     * @param mixed $src The source from where to get the images
      * @param Options $options Gallery configuration
      */
     public function __construct($src, Options $options)

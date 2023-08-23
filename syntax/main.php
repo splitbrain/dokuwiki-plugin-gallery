@@ -3,6 +3,7 @@
 use dokuwiki\File\PageResolver;
 use dokuwiki\plugin\gallery\classes\BasicFormatter;
 use dokuwiki\plugin\gallery\classes\FeedGallery;
+use dokuwiki\plugin\gallery\classes\ListGallery;
 use dokuwiki\plugin\gallery\classes\XHTMLFormatter;
 use dokuwiki\plugin\gallery\classes\NamespaceGallery;
 use dokuwiki\plugin\gallery\classes\Options;
@@ -15,7 +16,7 @@ use dokuwiki\plugin\gallery\classes\Options;
  * @author     Joe Lapp <joe.lapp@pobox.com>
  * @author     Dave Doyle <davedoyle.canadalawbook.ca>
  */
-class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
+class syntax_plugin_gallery_main extends DokuWiki_Syntax_Plugin
 {
 
     /** @inheritdoc */
@@ -39,7 +40,7 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
     /** @inheritdoc */
     public function connectTo($mode)
     {
-        $this->Lexer->addSpecialPattern('\{\{gallery>[^}]*\}\}', $mode, 'plugin_gallery');
+        $this->Lexer->addSpecialPattern('\{\{gallery>[^}]*\}\}', $mode, 'plugin_gallery_main');
     }
 
     /** @inheritdoc */
@@ -80,7 +81,9 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
     {
         [$src, $options] = $data;
 
-        if (preg_match('/^https?:\/\//i', $src)) {
+        if (is_array($src)) {
+            $gallery = new ListGallery($src, $options);
+        } elseif (preg_match('/^https?:\/\//i', $src)) {
             $gallery = new FeedGallery($src, $options);
         } else {
             $gallery = new NamespaceGallery($src, $options);
