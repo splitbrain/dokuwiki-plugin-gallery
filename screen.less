@@ -1,61 +1,96 @@
-div.dokuwiki div.gallery table {
-    border: none;
+@import "simple-lightbox/simple-lightbox.less";
+
+/** Simple Lightbox Adjustments */
+.sl-overlay {
+    background-color: #000;
 }
 
-div.dokuwiki div.gallery table td {
-    padding: 1em;
-    text-align: center;
-    vertical-align: middle;
-    border: none;
+.sl-wrapper {
+    .sl-counter,
+    .sl-close,
+    .sl-navigation button {
+        color: #fff;
+
+        &:hover {
+            color: #000;
+        }
+    }
 }
 
-div.dokuwiki div.gallery table img.tn {
-    padding: 0.4em;
-    border: 1px solid __border__;
-    max-width: none;
+/** Gallery Styles */
+div.plugin-gallery {
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1.4em;
+
+    div.gallery-page {
+        display: grid;
+        // column setup happens in Formatter::formatPage()
+        gap: 1em;
+        width: fit-content;
+        max-width: 100%;
+
+        figure {
+            text-align: center;
+            border: 1px solid @ini_border;
+            margin: 0;
+            padding: 0.4em;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            figcaption {
+                margin-top: 0.4em;
+
+                a {
+                    display: block;
+
+                    &.gallery-title {
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+
+    &.align-full {
+        width: 100%;
+    }
+
+    &.align-left {
+        float: left;
+        margin-right: 1em;
+    }
+
+    &.align-right {
+        float: right;
+        margin-left: 1em;
+    }
+
+    &.align-center {
+        display: flex;
+        justify-content: center;
+    }
+
+    .gallery-page-selector {
+        padding-top: 0.4em;
+        display: none; // hidden by default, shown by JS
+
+        a {
+            display: inline-block;
+            padding: 0.2em 0.4em;
+            border: 1px solid transparent;
+
+            &.active {
+                border: 1px solid @ini_border;
+                border-radius: 0.4em;
+            }
+        }
+    }
 }
-
-div.dokuwiki div.gallery {
-    clear: left;
-    margin-bottom: 1em;
-}
-
-/*div.dokuwiki div.gallery div {
- *   float: left;
- *   }*/
-
-div.dokuwiki div.gallery img.tn {
-    margin: 9px;
-    vertical-align: middle;
-    padding: 0.4em;
-    border: 1px solid #000;
-}
-
-div.dokuwiki div.gallery_left {
-    float: left;
-}
-
-div.dokuwiki div.gallery div {
-    float: left;
-}
-
-div.dokuwiki div.gallery_right {
-    float: right;
-}
-
-div.dokuwiki div.gallery_center {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-div.dokuwiki div.gallery_center {
-    width: 80%;
-    text-align: center;
-}
-
-/* for pagination */
-div.dokuwiki div.gallery div.gallery_pages {
-    float: none;
-    text-align: left;
-}
-

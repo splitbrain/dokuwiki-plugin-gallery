@@ -3,6 +3,7 @@
 $lang['pages'] = 'Gallery Pages:';
 $lang['js']['addgal'] = 'Add namespace as gallery';
 $lang['nothingfound'] = 'No images found.';
+$lang['fail'] = 'Failed to load gallery';
 
 
 $lang['js']['label_toolbar_button'] = 'Insert Gallery';
