@@ -18,6 +18,8 @@ class Formatter
     // region Main Formatters
 
     /**
+     * Format the whole Gallery
+     *
      * @param AbstractGallery $gallery
      * @return string
      */
@@ -49,25 +51,30 @@ class Formatter
         foreach ($pages as $page => $images) {
             $html .= $this->formatPage($images, $page);
         }
+        $html .= $this->formatPageSelector($pages);
         $html .= '</div>';
         return $html;
     }
 
     /**
-     * Create an array of pages for the given images
+     * Format the page selector
      *
-     * @param Image[] $images
-     * @return Image[][]
+     * @param $pages
+     * @return string
      */
-    protected function paginate($images)
+    protected function formatPageSelector($pages)
     {
-        if ($this->options->paginate) {
-            $pages = array_chunk($images, $this->options->paginate);
-        } else {
-            $pages = [$images];
-        }
+        if (count($pages) <= 1) return '';
 
-        return $pages;
+        $plugin = plugin_load('syntax', 'gallery');
+
+        $html = '<div class="gallery-page-selector">';
+        $html .= '<span>' . $plugin->getLang('pages') . ' </span>';
+        foreach (array_keys($pages) as $pid) {
+            $html .= '<a href="#gallery__' . $this->options->galleryID . '_' . $pid . '">' . ($pid + 1) . '</a> ';
+        }
+        $html .= '</div>';
+        return $html;
     }
 
     /**
@@ -86,18 +93,19 @@ class Formatter
 
         // define the grid
         $colwidth = $this->options->thumbnailWidth . 'px';
-        if($this->options->align === Options::ALIGN_FULL) {
-            // full width will auto fill with columns but scale them up if needed
-            $colwidth = 'minmax('.$colwidth.', 1fr)';
-        } else if($this->options->columns) {
-            // with a fixed number of columns we calculate the max width for each
-            $maxwidth = '(100% / ' . $this->options->columns . ') - 1em';
-            $colwidth = 'min(' . $colwidth . ', ' . $maxwidth . ')';
+        if ($this->options->columns) {
+            $cols = $this->options->columns;
+            if ($this->options->align === Options::ALIGN_FULL) {
+                $colwidth = '1fr';
+            } else {
+                // calculate the max width for each column
+                $maxwidth = '(100% / ' . $this->options->columns . ') - 1em';
+                $colwidth = 'min(' . $colwidth . ', ' . $maxwidth . ')';
+            }
+        } else {
+            $cols = 'auto-fill';
+            $colwidth = 'minmax(' . $colwidth . ', 1fr)';
         }
-
-
-
-        $cols = $this->options->columns ?: 'auto-fill';
         $attr['style'] = 'grid-template-columns: repeat(' . $cols . ', ' . $colwidth . ')';
 
         $html = '<div ' . buildAttributes($attr) . '>';
@@ -108,6 +116,12 @@ class Formatter
         return $html;
     }
 
+    /**
+     * Format a single thumbnail image in the gallery
+     *
+     * @param Image $image
+     * @return string
+     */
     protected function formatImage(Image $image)
     {
         global $ID;
@@ -127,28 +141,24 @@ class Formatter
         $a = [];
         $a['href'] = $this->getDetailLink($image);
         $a['title'] = $image->getTitle();
-        $a['data-caption'] = $image->getDescription();
+
         if ($this->options->lightbox) {
+            // double escape for lightbox:
+            $a['data-caption'] = join(' &ndash; ', array_filter([
+                '<b>'.hsc($image->getTitle()).'</b>',
+                hsc($image->getDescription())
+            ]));
             $a['class'] = "lightbox JSnocheck";
-            $a['rel'] = 'lightbox[gal-' . substr(md5($ID), 4) . ']'; //unique ID for the gallery
+            $a['rel'] = 'lightbox[gal-' . substr(md5($ID), 4) . ']'; //unique ID all images on the same page
             $a['data-url'] = $this->getLightboxLink($image);
         }
 
         // figure properties
         $fig = [];
         $fig['class'] = 'gallery-image';
-        if($this->options->align !== Options::ALIGN_FULL) {
+        if ($this->options->align !== Options::ALIGN_FULL) {
             $fig['style'] = 'max-width: ' . $this->options->thumbnailWidth . 'px; ';
         }
-
-        # differentiate between the URL for the lightbox and the URL for details
-        # using a data-attribute
-        # needs slight adjustment in the swipebox script
-        # fall back to href when no data-attribute is set
-        # lightbox url should have width/height limit -> adjust from old defaults to 1600x1200?
-        # use detail URLs for thumbnail, title and filename
-        # when direct is set it should link to full size image
-
 
         $html = '<figure ' . buildAttributes($fig, true) . '>';
         $html .= '<a ' . buildAttributes($a, true) . '>';
@@ -184,6 +194,29 @@ class Formatter
 
     // region Utilities
 
+    /**
+     * Create an array of pages for the given images
+     *
+     * @param Image[] $images
+     * @return Image[][]
+     */
+    protected function paginate($images)
+    {
+        if ($this->options->paginate) {
+            $pages = array_chunk($images, $this->options->paginate);
+        } else {
+            $pages = [$images];
+        }
+
+        return $pages;
+    }
+
+    /**
+     * Access the detail link for this image
+     *
+     * @param Image $image
+     * @return string
+     */
     protected function getDetailLink(Image $image)
     {
         if ($image->getDetaillink()) {
@@ -223,7 +256,9 @@ class Formatter
         return ml($image->getSrc(), ['w' => $width, 'h' => $height], true, '&');
     }
 
-    /** Calculate the thumbnail size */
+    /**
+     * Calculate the thumbnail size
+     */
     protected function getThumbnailSize(Image $image)
     {
         $crop = $this->options->crop;

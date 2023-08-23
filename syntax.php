@@ -94,10 +94,8 @@ class syntax_plugin_gallery extends DokuWiki_Syntax_Plugin
             $R->doc .= $formatter->format($gallery);
 
             // FIXME next steps:
-            // * fix pagination CSS and JS
             // * implement minimal standard renderer for all renderers (just inline thumbnails with links)
             // * maybe implement PDF renderer separately from XHTML
-            // * adjust lightbox script
             // * add more unit tests
 
             return true;

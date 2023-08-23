@@ -1,6 +1,25 @@
+@import "simple-lightbox/simple-lightbox.less";
+
+/** Simple Lightbox Adjustments */
+.sl-overlay {
+    background-color: #000;
+}
+.sl-wrapper {
+    .sl-counter,
+    .sl-close,
+    .sl-navigation button {
+        color: #fff;
+        &:hover {
+            color: #000;
+        }
+    }
+}
+
+/** Gallery Styles */
 div.plugin-gallery {
     max-width: 100%;
     box-sizing: border-box;
+    margin-bottom: 1.4em;
 
     div.gallery-page {
         display: grid;
@@ -17,6 +36,7 @@ div.plugin-gallery {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            overflow: hidden;
 
             img {
                 max-width: 100%;
@@ -47,72 +67,17 @@ div.plugin-gallery {
         margin-left: 1em;
     }
     &.align-center {
-        margin-left: auto;
-        margin-right: auto;
+        display: flex;
+        justify-content: center;
+    }
+
+    .gallery-page-selector {
+        padding-top: 0.4em;
+        display: none; // hidden by default, shown by JS
+
+        a {
+            display: inline-block;
+            padding: 0.2em 0.4em;
+        }
     }
 }
-
-
-
-
-div.dokuwiki div.gallery table {
-    border: none;
-}
-
-div.dokuwiki div.gallery table td {
-    padding: 1em;
-    text-align: center;
-    vertical-align: middle;
-    border: none;
-}
-
-div.dokuwiki div.gallery table img.tn {
-    padding: 0.4em;
-    border: 1px solid __border__;
-    max-width: none;
-}
-
-div.dokuwiki div.gallery {
-    clear: left;
-    margin-bottom: 1em;
-}
-
-/*div.dokuwiki div.gallery div {
- *   float: left;
- *   }*/
-
-div.dokuwiki div.gallery img.tn {
-    margin: 9px;
-    vertical-align: middle;
-    padding: 0.4em;
-    border: 1px solid #000;
-}
-
-div.dokuwiki div.gallery_left {
-    float: left;
-}
-
-div.dokuwiki div.gallery div {
-    float: left;
-}
-
-div.dokuwiki div.gallery_right {
-    float: right;
-}
-
-div.dokuwiki div.gallery_center {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-div.dokuwiki div.gallery_center {
-    width: 80%;
-    text-align: center;
-}
-
-/* for pagination */
-div.dokuwiki div.gallery div.gallery_pages {
-    float: none;
-    text-align: left;
-}
-
