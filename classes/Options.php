@@ -29,9 +29,9 @@ class Options
     public bool $showname = false;
     public bool $showtitle = false;
     public bool $reverse = false;
-    public bool $cache = true;
+    public bool $cache = false;
     public bool $crop = false;
-    public bool $recursive = true;
+    public bool $recursive = false;
     public $sort = self::SORT_FILE;
     public int $limit = 0;
     public int $offset = 0;

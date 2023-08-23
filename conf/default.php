@@ -9,7 +9,7 @@ $conf['thumbnail_width'] = 120;
 $conf['thumbnail_height'] = 120;
 $conf['image_width'] = 1600;
 $conf['image_height'] = 1200;
-$conf['cols'] = 5;
+$conf['cols'] = 0;
 
 $conf['sort'] = 'file';
-$conf['options'] = 'cache';
+$conf['options'] = 'cache, crop, lightbox';
