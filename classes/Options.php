@@ -4,17 +4,16 @@ namespace dokuwiki\plugin\gallery\classes;
 
 class Options
 {
+    public const SORT_FILE = 'file';
+    public const SORT_CTIME = 'date';
+    public const SORT_MTIME = 'mod';
+    public const SORT_TITLE = 'title';
+    public const SORT_RANDOM = 'random';
 
-    const SORT_FILE = 'file';
-    const SORT_CTIME = 'date';
-    const SORT_MTIME = 'mod';
-    const SORT_TITLE = 'title';
-    const SORT_RANDOM = 'random';
-
-    const ALIGN_FULL = 0;
-    const ALIGN_LEFT = 1;
-    const ALIGN_RIGHT = 2;
-    const ALIGN_CENTER = 3;
+    public const ALIGN_FULL = 0;
+    public const ALIGN_LEFT = 1;
+    public const ALIGN_RIGHT = 2;
+    public const ALIGN_CENTER = 3;
 
     // defaults
     public string $galleryID = '';
@@ -116,5 +115,4 @@ class Options
             }
         }
     }
-
 }

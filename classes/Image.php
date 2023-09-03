@@ -6,7 +6,7 @@ use dokuwiki\Utf8\PhpString;
 
 class Image
 {
-    const IMG_REGEX = '/\.(jpe?g|gif|png|svg|webp)$/i';
+    public const IMG_REGEX = '/\.(jpe?g|gif|png|svg|webp)$/i';
 
     protected $isExternal = false;
     protected $src;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Options for the gallery plugin
  *
@@ -34,4 +35,3 @@ $meta['options'] = array('multicheckbox', '_choices' => array(
     'showname',
     'showtitle',
 ));
-

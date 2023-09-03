@@ -10,7 +10,6 @@ use dokuwiki\plugin\gallery\classes\Options;
  */
 class syntax_plugin_gallery_list extends syntax_plugin_gallery_main
 {
-
     /** @inheritDoc */
     public function connectTo($mode)
     {
@@ -33,4 +32,3 @@ class syntax_plugin_gallery_list extends syntax_plugin_gallery_main
         return [$list, $options];
     }
 }
-

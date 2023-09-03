@@ -2,6 +2,7 @@
 
 namespace dokuwiki\plugin\gallery\classes;
 
+use SimplePie\Enclosure;
 use FeedParser;
 
 class FeedGallery extends AbstractGallery
@@ -27,15 +28,17 @@ class FeedGallery extends AbstractGallery
      * @return void
      * @throws \Exception
      */
-    protected function parseFeed($url) {
+    protected function parseFeed($url)
+    {
         $feed = new FeedParser();
         $feed->set_feed_url($url);
+
         $ok = $feed->init();
         if (!$ok) throw new \Exception($feed->error());
 
         foreach ($feed->get_items() as $item) {
             $enclosure = $item->get_enclosure();
-            if (!$enclosure) continue;
+            if (!$enclosure instanceof Enclosure) continue;
 
             // skip non-image enclosures
             if ($enclosure->get_type() && substr($enclosure->get_type(), 0, 5) != 'image') {
@@ -87,7 +90,7 @@ class FeedGallery extends AbstractGallery
     protected function initBaseUrl($url)
     {
         $main = parse_url($url);
-        $this->feedHost = $main['scheme'] . '://' . $main['host'] . (!empty($main['port']) ? ':' . $main['port'] : '');
+        $this->feedHost = $main['scheme'] . '://' . $main['host'] . (empty($main['port']) ? '' : ':' . $main['port']);
         $this->feedPath = dirname($main['path']) . '/';
     }
 }
