@@ -2,7 +2,6 @@
 
 namespace dokuwiki\plugin\gallery\classes;
 
-
 /**
  * Formats the gallery
  *
@@ -10,8 +9,8 @@ namespace dokuwiki\plugin\gallery\classes;
  * good, but will work with any renderer. Specialized formatters can be created for each renderer to make
  * use of their special features.
  */
-class BasicFormatter {
-
+class BasicFormatter
+{
     protected Options $options;
     protected \Doku_Renderer $renderer;
 
@@ -47,8 +46,9 @@ class BasicFormatter {
      * @param Image $image
      * @return void
      */
-    protected function renderImage(Image $image) {
-        list($w, $h) = $this->getThumbnailSize($image);
+    protected function renderImage(Image $image)
+    {
+        [$w, $h] = $this->getThumbnailSize($image);
         $link = $image->getDetaillink() ?: $image->getSrc();
 
         $imgdata = [
@@ -60,7 +60,7 @@ class BasicFormatter {
             'cache' => ''
         ];
 
-        if($image->isExternal()) {
+        if ($image->isExternal()) {
             $this->renderer->externallink($link, $imgdata);
         } else {
             $this->renderer->internalmedia(":$link", $imgdata); // prefix with : to ensure absolute src
@@ -80,7 +80,7 @@ class BasicFormatter {
             $crop = true;
         }
         if (!$crop) {
-            list($thumbWidth, $thumbHeight) = $this->fitBoundingBox(
+            [$thumbWidth, $thumbHeight] = $this->fitBoundingBox(
                 $image->getWidth(),
                 $image->getHeight(),
                 $this->options->thumbnailWidth,

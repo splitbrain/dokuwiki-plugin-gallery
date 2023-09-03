@@ -1,10 +1,13 @@
 <?php
 
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\EventHandler;
+use dokuwiki\Extension\Event;
 use dokuwiki\plugin\gallery\GalleryNode;
 use dokuwiki\plugin\prosemirror\parser\RootNode;
 use dokuwiki\plugin\prosemirror\schema\Node;
 
-class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
+class action_plugin_gallery_prosemirror extends ActionPlugin
 {
     /**
      * Registers a callback function for a given event
@@ -13,7 +16,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
      *
      * @return void
      */
-    public function register(Doku_Event_Handler $controller)
+    public function register(EventHandler $controller)
     {
         // check if prosemirror is installed
         if (!class_exists('\dokuwiki\plugin\prosemirror\schema\Node')) return;
@@ -35,7 +38,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
      *
      * @return void
      */
-    public function writeDefaultsToJSINFO(Doku_Event $event, $param)
+    public function writeDefaultsToJSINFO(Event $event, $param)
     {
         global $JSINFO;
 
@@ -48,9 +51,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
             $JSINFO['plugins'] = [];
         }
         $JSINFO['plugins']['gallery'] = [
-            'defaults' => array_map(function ($default) {
-                return ['default' => $default,];
-            }, $attributes),
+            'defaults' => array_map(static fn($default) => ['default' => $default,], $attributes),
         ];
         $JSINFO['plugins']['gallery']['defaults']['namespace'] = ['default' => ''];
     }
@@ -67,7 +68,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
      *
      * @return void
      */
-    public function renderFromInstructions(Doku_Event $event, $param)
+    public function renderFromInstructions(Event $event, $param)
     {
         if ($event->data['name'] !== 'gallery') {
             return;
@@ -110,7 +111,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
 
         if ($data['align'] === 1) {
             $data['align'] = 'right';
-        } else if ($data['align'] === 2) {
+        } elseif ($data['align'] === 2) {
             $data['align'] = 'left';
         } else {
             $data['align'] = 'center';
@@ -133,7 +134,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
      *
      * @return void
      */
-    public function parseToSyntax(Doku_Event $event, $param)
+    public function parseToSyntax(Event $event, $param)
     {
         if ($event->data['node']['type'] !== 'dwplugin_gallery') {
             return;
@@ -155,7 +156,7 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
      *
      * @return void
      */
-    public function renderAttributesToHTML(Doku_Event $event, $param)
+    public function renderAttributesToHTML(Event $event, $param)
     {
         if ($event->data !== 'plugin_gallery_prosemirror') {
             return;
@@ -164,10 +165,9 @@ class action_plugin_gallery_prosemirror extends DokuWiki_Action_Plugin
         $event->stopPropagation();
 
         global $INPUT;
-        $node = new GalleryNode(['attrs' => json_decode($INPUT->str('attrs'), true)], new RootNode([]));
+        $node = new GalleryNode(['attrs' => json_decode($INPUT->str('attrs'), true, 512, JSON_THROW_ON_ERROR)], new RootNode([]));
         $syntax = $node->toSyntax();
         $html = p_render('xhtml', p_get_instructions($syntax), $info);
         echo $html;
     }
 }
-

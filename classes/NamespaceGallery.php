@@ -4,7 +4,6 @@ namespace dokuwiki\plugin\gallery\classes;
 
 class NamespaceGallery extends AbstractGallery
 {
-
     /** @inheritdoc */
     public function __construct($ns, $options)
     {
