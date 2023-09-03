@@ -2,8 +2,8 @@
 
 namespace dokuwiki\plugin\gallery\classes;
 
-use SimplePie\Enclosure;
 use FeedParser;
+use SimplePie\Enclosure;
 
 class FeedGallery extends AbstractGallery
 {
@@ -53,7 +53,10 @@ class FeedGallery extends AbstractGallery
             $image = new Image($enclosureLink);
             $image->setDetaillink($detailLink);
             $image->setTitle(htmlspecialchars_decode($enclosure->get_title() ?? '', ENT_COMPAT));
-            $image->setDescription(strip_tags(htmlspecialchars_decode($enclosure->get_description() ?? '', ENT_COMPAT)));
+            $image->setDescription(strip_tags(htmlspecialchars_decode(
+                $enclosure->get_description() ?? '',
+                ENT_COMPAT
+            )));
             $image->setCreated($item->get_date('U'));
             $image->setModified($item->get_date('U'));
             $image->setWidth($enclosure->get_width());

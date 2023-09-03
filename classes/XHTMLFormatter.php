@@ -15,7 +15,7 @@ class XHTMLFormatter extends BasicFormatter
         ];
 
         switch ($this->options->align) {
-            case Options::ALIGN_FULL;
+            case Options::ALIGN_FULL:
                 $attr['class'] .= ' align-full';
                 break;
             case Options::ALIGN_LEFT:
@@ -54,7 +54,12 @@ class XHTMLFormatter extends BasicFormatter
         $this->renderer->doc .= '<div class="gallery-page-selector">';
         $this->renderer->doc .= '<span>' . $plugin->getLang('pages') . ' </span>';
         foreach (array_keys($pages) as $pid) {
-            $this->renderer->doc .= '<a href="#gallery__' . $this->options->galleryID . '_' . $pid . '">' . ($pid + 1) . '</a> ';
+            $this->renderer->doc .= sprintf(
+                '<a href="#gallery__%s_%s">%d</a> ',
+                $this->options->galleryID,
+                $pid,
+                $pid + 1
+            );
         }
         $this->renderer->doc .= '</div>';
     }
