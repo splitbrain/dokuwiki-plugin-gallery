@@ -1,5 +1,6 @@
 <?php
 
+use dokuwiki\Extension\SyntaxPlugin;
 use dokuwiki\File\PageResolver;
 use dokuwiki\plugin\gallery\classes\BasicFormatter;
 use dokuwiki\plugin\gallery\classes\FeedGallery;
@@ -16,9 +17,8 @@ use dokuwiki\plugin\gallery\classes\XHTMLFormatter;
  * @author     Joe Lapp <joe.lapp@pobox.com>
  * @author     Dave Doyle <davedoyle.canadalawbook.ca>
  */
-class syntax_plugin_gallery_main extends DokuWiki_Syntax_Plugin
+class syntax_plugin_gallery_main extends SyntaxPlugin
 {
-
     /** @inheritdoc */
     public function getType()
     {
@@ -59,7 +59,7 @@ class syntax_plugin_gallery_main extends DokuWiki_Syntax_Plugin
         if (substr($match, -1, 1) == ' ') $options->align += Options::ALIGN_LEFT;
 
         // extract src and params
-        list($src, $params) = sexplode('?', $match, 2);
+        [$src, $params] = sexplode('?', $match, 2);
         $src = trim($src);
 
         // resolve relative namespace
@@ -82,7 +82,6 @@ class syntax_plugin_gallery_main extends DokuWiki_Syntax_Plugin
         [$src, $options] = $data;
 
         try {
-
             if (is_array($src)) {
                 $gallery = new ListGallery($src, $options);
             } elseif (preg_match('/^https?:\/\//i', $src)) {
@@ -92,13 +91,10 @@ class syntax_plugin_gallery_main extends DokuWiki_Syntax_Plugin
             }
 
             $R->info['cache'] = $options->cache;
-            switch ($mode) {
-                case 'xhtml':
-                    $formatter = new XHTMLFormatter($R, $options);
-                    break;
-                // FIXME additional specialized Formatters could be added here (PDF, ODT)
-                default:
-                    $formatter = new BasicFormatter($R, $options);
+            if ($mode == 'xhtml') {
+                $formatter = new XHTMLFormatter($R, $options);
+            } else {
+                $formatter = new BasicFormatter($R, $options);
             }
             $formatter->render($gallery);
         } catch (Exception $e) {

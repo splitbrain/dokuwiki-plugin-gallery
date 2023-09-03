@@ -6,7 +6,6 @@ use dokuwiki\plugin\prosemirror\parser\Node;
 
 class GalleryNode extends Node
 {
-
     protected $parent;
     protected $data;
 
@@ -77,7 +76,7 @@ class GalleryNode extends Node
         $alignLeft = $attrs['align'] === 'left' ? ' ' : '';
         $alignRight = $attrs['align'] === 'right' ? ' ' : '';
         $result = '{{gallery>' . $alignRight . $attrs['namespace'];
-        if (!empty($query)) {
+        if ($query !== []) {
             $result .= '?' . implode('&', $query);
         }
         $result .= $alignLeft . '}}';

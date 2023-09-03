@@ -2,10 +2,8 @@
 
 namespace dokuwiki\plugin\gallery\classes;
 
-
 class XHTMLFormatter extends BasicFormatter
 {
-
     // region Main Render Functions
 
     /** @inheritdoc */
@@ -105,7 +103,7 @@ class XHTMLFormatter extends BasicFormatter
         global $ID;
 
         // thumbnail image properties
-        list($w, $h) = $this->getThumbnailSize($image);
+        [$w, $h] = $this->getThumbnailSize($image);
         $w *= 2; // retina
         $h *= 2;
         $img = [];
@@ -122,7 +120,7 @@ class XHTMLFormatter extends BasicFormatter
 
         if ($this->options->lightbox) {
             // double escape for lightbox:
-            $a['data-caption'] = join(' &ndash; ', array_filter([
+            $a['data-caption'] = implode(' &ndash; ', array_filter([
                 '<b>' . hsc($image->getTitle()) . '</b>',
                 hsc($image->getDescription())
             ]));
@@ -210,7 +208,7 @@ class XHTMLFormatter extends BasicFormatter
         }
 
         // fit into bounding box
-        list($width, $height) = $this->fitBoundingBox(
+        [$width, $height] = $this->fitBoundingBox(
             $image->getWidth(),
             $image->getHeight(),
             $this->options->lightboxWidth,
