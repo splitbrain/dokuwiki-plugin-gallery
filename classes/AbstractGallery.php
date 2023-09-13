@@ -9,7 +9,7 @@ abstract class AbstractGallery
     /** @var Image[] */
     protected $images = [];
     /** @var Options */
-    protected Options $options;
+    protected $options;
 
     /**
      * Initialize the Gallery

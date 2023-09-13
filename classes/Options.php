@@ -4,39 +4,39 @@ namespace dokuwiki\plugin\gallery\classes;
 
 class Options
 {
-    public const SORT_FILE = 'file';
-    public const SORT_CTIME = 'date';
-    public const SORT_MTIME = 'mod';
-    public const SORT_TITLE = 'title';
-    public const SORT_RANDOM = 'random';
+    const SORT_FILE = 'file';
+    const SORT_CTIME = 'date';
+    const SORT_MTIME = 'mod';
+    const SORT_TITLE = 'title';
+    const SORT_RANDOM = 'random';
 
-    public const ALIGN_FULL = 0;
-    public const ALIGN_LEFT = 1;
-    public const ALIGN_RIGHT = 2;
-    public const ALIGN_CENTER = 3;
+    const ALIGN_FULL = 0;
+    const ALIGN_LEFT = 1;
+    const ALIGN_RIGHT = 2;
+    const ALIGN_CENTER = 3;
 
     // defaults
-    public string $galleryID = '';
-    public int $thumbnailWidth = 120;
-    public int $thumbnailHeight = 120;
-    public int $lightboxWidth = 1600;
-    public int $lightboxHeight = 1200;
-    public int $columns = 0;
-    public string $filter = '';
-    public bool $lightbox = false;
-    public bool $direct = false;
-    public bool $showcaption = false;
-    public bool $showname = false;
-    public bool $showtitle = false;
-    public bool $reverse = false;
-    public bool $cache = false;
-    public bool $crop = false;
-    public bool $recursive = false;
-    public $sort = self::SORT_FILE;
-    public int $limit = 0;
-    public int $offset = 0;
-    public int $paginate = 0;
-    public int $align = self::ALIGN_FULL;
+    public  $galleryID = '';
+    public  $thumbnailWidth = 120;
+    public  $thumbnailHeight = 120;
+    public  $lightboxWidth = 1600;
+    public  $lightboxHeight = 1200;
+    public  $columns = 0;
+    public  $filter = '';
+    public  $lightbox = false;
+    public  $direct = false;
+    public  $showcaption = false;
+    public  $showname = false;
+    public  $showtitle = false;
+    public  $reverse = false;
+    public  $cache = false;
+    public  $crop = false;
+    public  $recursive = false;
+    public  $sort = self::SORT_FILE;
+    public  $limit = 0;
+    public  $offset = 0;
+    public  $paginate = 0;
+    public  $align = self::ALIGN_FULL;
 
     /**
      * Options constructor.
