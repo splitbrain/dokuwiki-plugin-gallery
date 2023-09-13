@@ -1,7 +1,7 @@
 <?php
 
 use dokuwiki\Extension\SyntaxPlugin;
-use dokuwiki\File\PageResolver;
+use dokuwiki\File\MediaResolver;
 use dokuwiki\plugin\gallery\classes\BasicFormatter;
 use dokuwiki\plugin\gallery\classes\FeedGallery;
 use dokuwiki\plugin\gallery\classes\ListGallery;
@@ -64,8 +64,8 @@ class syntax_plugin_gallery_main extends SyntaxPlugin
 
         // resolve relative namespace
         if (!preg_match('/^https?:\/\//i', $src)) {
-            $pageResolver = new PageResolver($ID);
-            $src = $pageResolver->resolveId($src);
+            $mediaResolver = new MediaResolver($ID);
+            $src = $mediaResolver->resolveId($src);
         }
 
         // parse parameters
