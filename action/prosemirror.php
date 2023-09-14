@@ -3,6 +3,7 @@
 use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Extension\Event;
+use dokuwiki\plugin\gallery\classes\Options;
 use dokuwiki\plugin\gallery\GalleryNode;
 use dokuwiki\plugin\prosemirror\parser\RootNode;
 use dokuwiki\plugin\prosemirror\schema\Node;
@@ -42,10 +43,7 @@ class action_plugin_gallery_prosemirror extends ActionPlugin
     {
         global $JSINFO;
 
-        /** @var syntax_plugin_gallery $syntax */
-        $syntax = plugin_load('syntax', 'gallery');
-        $defaults = $syntax->getDataFromParams($syntax->getConf('options'));
-        $attributes = $this->cleanAttributes($defaults);
+        $defaults = $this->getDefaults();
 
         if (!isset($JSINFO['plugins'])) {
             $JSINFO['plugins'] = [];
@@ -53,7 +51,7 @@ class action_plugin_gallery_prosemirror extends ActionPlugin
         $JSINFO['plugins']['gallery'] = [
             'defaults' => array_map(function ($default) {
                 return ['default' => $default,];
-            }, $attributes),
+            }, $defaults),
         ];
         $JSINFO['plugins']['gallery']['defaults']['namespace'] = ['default' => ''];
     }
@@ -72,57 +70,27 @@ class action_plugin_gallery_prosemirror extends ActionPlugin
      */
     public function renderFromInstructions(Event $event, $param)
     {
-        if ($event->data['name'] !== 'gallery') {
+        if ($event->data['name'] !== 'gallery_main') {
             return;
         }
         $event->preventDefault();
         $event->stopPropagation();
 
         $node = new Node('dwplugin_gallery');
-        // FIXME we may have to parse the namespace from the original syntax ?
         $data = $event->data['data'];
-        $ns = $data['ns'];
-        $data = $this->cleanAttributes($data);
+        // FIXME source can be something other than namespace
+        [$ns, $options] = $data;
 
         if (cleanID($ns) === $ns) {
             $ns = ':' . $ns;
         }
         $node->attr('namespace', $ns);
-        foreach ($data as $name => $value) {
+
+        $attrs = $this->optionsToAttrs($options);
+        foreach ($attrs as $name => $value) {
             $node->attr($name, $value);
         }
         $event->data['renderer']->nodestack->add($node);
-    }
-
-    /**
-     * Slightly rewrite the attributes to the format expected by our schema
-     *
-     * @param $data
-     *
-     * @return mixed
-     */
-    public function cleanAttributes($data)
-    {
-        $data['thumbnailsize'] = $data['tw'] . 'x' . $data['th'];
-        $data['imagesize'] = $data['iw'] . 'X' . $data['ih'];
-        if ($data['random']) {
-            $data['sort'] = 'random';
-        } else {
-            $data['sort'] .= 'sort';
-        }
-
-        if ($data['align'] === 1) {
-            $data['align'] = 'right';
-        } elseif ($data['align'] === 2) {
-            $data['align'] = 'left';
-        } else {
-            $data['align'] = 'center';
-        }
-
-        unset($data['tw'], $data['th'], $data['iw'], $data['ih'], $data['random']);
-        unset($data['ns'], $data['galid']);
-
-        return $data;
     }
 
     /**
@@ -171,5 +139,57 @@ class action_plugin_gallery_prosemirror extends ActionPlugin
         $syntax = $node->toSyntax();
         $html = p_render('xhtml', p_get_instructions($syntax), $info);
         echo $html;
+    }
+
+    /**
+     * Get default node attributes from gallery Options object
+     *
+     * @return array
+     */
+    public function getDefaults(): array
+    {
+        $options = new Options();
+
+        return [
+            'thumbnailsize' => $options->thumbnailWidth . 'x' . $options->thumbnailHeight,
+            'imagesize' => $options->lightboxWidth . 'X' . $options->lightboxHeight,
+            'cache' => $options->cache,
+            'filter' => $options->filter,
+            'showname' => $options->showname,
+            'showtitle' => $options->showtitle,
+            'crop' => $options->crop,
+            'direct' => $options->direct,
+            'reverse' => $options->reverse,
+            'recursive' => $options->recursive,
+            'align' => $options->align,
+            'cols' => $options->columns,
+            'limit' => $options->limit,
+            'offset' => $options->offset,
+            'paginate' => $options->paginate,
+            'sort' => $options->sort,
+        ];
+    }
+
+    /**
+     * Convert gallery options to node attributes
+     *
+     * @param Options $options
+     * @return array
+     */
+    protected function optionsToAttrs($options)
+    {
+        $attrs = (array)$options;
+
+        $attrs['thumbnailsize'] = $options->thumbnailWidth . 'x' . $options->thumbnailHeight;
+        $attrs['imagesize'] = $options->lightboxWidth . 'X' . $options->lightboxHeight;
+        $attrs['cols'] = $options->columns;
+
+        unset($attrs['thumbnailWidth']);
+        unset($attrs['thumbnailHeight']);
+        unset($attrs['lightboxWidth']);
+        unset($attrs['lightboxHeight']);
+        unset($attrs['columns']);
+
+        return $attrs;
     }
 }

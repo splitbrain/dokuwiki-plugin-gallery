@@ -4,6 +4,9 @@ namespace dokuwiki\plugin\gallery;
 
 use dokuwiki\plugin\prosemirror\parser\Node;
 
+/**
+ * Gallery Node in Prosemirror editor
+ */
 class GalleryNode extends Node
 {
     protected $parent;
@@ -30,12 +33,9 @@ class GalleryNode extends Node
      */
     public function toSyntax()
     {
-        /** @var syntax_plugin_gallery $syntax */
-        $syntax = plugin_load('syntax', 'gallery');
-        $defaults = $syntax->getDataFromParams($syntax->getConf('options'));
-        /** @var action_plugin_gallery_prosemirror $action */
+        /** @var \action_plugin_gallery_prosemirror $action */
         $action = plugin_load('action', 'gallery_prosemirror');
-        $defaults = $action->cleanAttributes($defaults);
+        $defaults = $action->getDefaults();
         $query = [];
         $attrs = $this->data['attrs'];
         if ($attrs['thumbnailsize'] !== $defaults['thumbnailsize']) {
