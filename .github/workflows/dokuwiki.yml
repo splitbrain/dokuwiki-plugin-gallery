@@ -8,4 +8,4 @@ on:
 
 jobs:
   all:
-    uses: dokuwiki/github-action/.github/workflows/all.yml@main
+    uses: dokuwiki/github-action/.github/workflows/all.yml@lint
