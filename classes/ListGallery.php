@@ -17,7 +17,7 @@ class ListGallery extends AbstractGallery
 
         foreach ($src as $item) {
             [$img, $meta] = sexplode(' ', $item, 2);
-            [$title, $desc] = sexplode('-', $meta, 2);
+            [$title, $desc] = sexplode('|', $meta, 2);
 
             $img = trim($img);
             $title = trim($title);
