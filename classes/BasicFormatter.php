@@ -11,8 +11,10 @@ namespace dokuwiki\plugin\gallery\classes;
  */
 class BasicFormatter
 {
-    protected Options $options;
-    protected \Doku_Renderer $renderer;
+    /** @var Options */
+    protected $options;
+    /** @var \Doku_Renderer  */
+    protected $renderer;
 
     /**
      * Create a new Gallery formatter

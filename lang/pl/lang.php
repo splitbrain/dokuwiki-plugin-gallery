@@ -4,6 +4,7 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  *
  * @author Marek Adamski <fevbew@wp.pl>
+ * @author Michał <kamykowsky@gmail.com>
  * @author Bartek S <sadupl@gmail.com>
  */
 $lang['pages']                 = 'Stron galerii:';
