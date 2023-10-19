@@ -143,8 +143,6 @@ class action_plugin_gallery_prosemirror extends ActionPlugin
 
     /**
      * Get default node attributes from gallery Options object
-     *
-     * @return array
      */
     public function getDefaults(): array
     {
