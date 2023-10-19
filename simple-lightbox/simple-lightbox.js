@@ -2,7 +2,7 @@
 	By André Rinas, www.andrerinas.de
 	Documentation, www.simplelightbox.com
 	Available for use under the MIT License
-	Version 2.14.1
+	Version 2.14.2
 */
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (global){(function (){
@@ -42,6 +42,7 @@ var SimpleLightbox = /*#__PURE__*/function () {
       captionsData: 'title',
       captionPosition: 'bottom',
       captionClass: '',
+      captionHTML: true,
       close: true,
       closeText: '&times;',
       swipeClose: true,
@@ -259,7 +260,7 @@ var SimpleLightbox = /*#__PURE__*/function () {
       if (this.options.captionSelector.startsWith('+')) {
         var selector = this.options.captionSelector.replace(/^\+/, '').trimStart();
         var sibling = elem.nextElementSibling;
-        if (sibling.matches(selector)) {
+        if (sibling && sibling.matches(selector)) {
           return sibling;
         }
         return false;
@@ -1095,12 +1096,14 @@ var SimpleLightbox = /*#__PURE__*/function () {
     }
   }, {
     key: "setCaption",
-    value: function setCaption(captionText, imageWidth) {
+    value: function setCaption(captionText, imageWidth, allowHTML) {
       var _this7 = this;
       if (this.options.captions && captionText && captionText !== '' && typeof captionText !== "undefined") {
+        var _ref;
+        var property = ((_ref = allowHTML !== null && allowHTML !== void 0 ? allowHTML : this.options.captionHTML) !== null && _ref !== void 0 ? _ref : true) ? 'innerHTML' : 'innerText';
         this.hide(this.domNodes.caption);
         this.domNodes.caption.style.width = imageWidth + 'px';
-        this.domNodes.caption.innerHTML = captionText;
+        this.domNodes.caption[property] = captionText;
         this.domNodes.image.appendChild(this.domNodes.caption);
         setTimeout(function () {
           _this7.fadeIn(_this7.domNodes.caption, _this7.options.fadeSpeed);
