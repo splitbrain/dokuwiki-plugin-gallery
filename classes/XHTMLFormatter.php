@@ -108,9 +108,8 @@ class XHTMLFormatter extends BasicFormatter
         global $ID;
 
         // thumbnail image properties
-        [$w, $h] = $this->getThumbnailSize($image);
-        $w *= 2; // retina
-        $h *= 2;
+        [$w, $h] = $this->getThumbnailSize($image, 2);
+
         $img = [];
         $img['width'] = $w;
         $img['height'] = $h;

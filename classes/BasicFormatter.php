@@ -13,7 +13,7 @@ class BasicFormatter
 {
     /** @var Options */
     protected $options;
-    /** @var \Doku_Renderer  */
+    /** @var \Doku_Renderer */
     protected $renderer;
 
     /**
@@ -74,23 +74,39 @@ class BasicFormatter
 
     /**
      * Calculate the thumbnail size
+     *
+     * @param Image $image
+     * @param int|float $retina The retina scaling factor
+     * @return array
      */
-    protected function getThumbnailSize(Image $image)
+    protected function getThumbnailSize(Image $image, $retina = 1)
     {
-        $crop = $this->options->crop;
+        $thumbW = $this->options->thumbnailWidth * $retina;
+        $thumbH = $this->options->thumbnailHeight * $retina;
+
+        // if image size is unknown, use the configured thumbnail size
         if (!$image->getWidth() || !$image->getHeight()) {
-            $crop = true;
+            return [$thumbW, $thumbH];
         }
-        if (!$crop) {
+
+        // avoid upscaling
+        if (
+            $image->getWidth() < $thumbW &&
+            $image->getHeight() < $thumbH
+        ) {
+            return [$image->getWidth(), $image->getHeight()];
+        }
+
+        if (!$this->options->crop) {
             [$thumbWidth, $thumbHeight] = $this->fitBoundingBox(
                 $image->getWidth(),
                 $image->getHeight(),
-                $this->options->thumbnailWidth,
-                $this->options->thumbnailHeight
+                $thumbW,
+                $thumbH
             );
         } else {
-            $thumbWidth = $this->options->thumbnailWidth;
-            $thumbHeight = $this->options->thumbnailHeight;
+            $thumbWidth = $thumbW;
+            $thumbHeight = $thumbH;
         }
         return [$thumbWidth, $thumbHeight];
     }
