@@ -2,17 +2,40 @@
 
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
+ *
+ * @author создай свое предприятие <bev_archdall@yahoo.com>
  * @author Abel Rico <aricoripoll@iesesteveterradas.cat>
  */
-$lang['thumbnail_width']       = 'Amplada de la miniatura';
-$lang['thumbnail_height']      = 'Alçada de la miniatura';
-$lang['image_width']           = 'Amplada de la imatge';
-$lang['image_height']          = 'Alçada de la imatge';
-$lang['cols']                  = 'Imatges per fila';
-$lang['sort']                  = 'Com ordenar les imatges';
-$lang['sort_o_file']           = 'Ordenar per nom de l\'arxiu';
-$lang['sort_o_mod']            = 'Ordenar per data de l\'arxiu';
-$lang['sort_o_date']           = 'Ordenar per la data de l\'EXIF';
-$lang['sort_o_title']          = 'Ordenar pel títol de l\'EXIF';
-$lang['options']               = 'Opcions predeterminades de galeria adicionals';
+$lang['thumbnail_width']       = 'Канал о бизнесе, стартапах, новых технологиях и возможностях в России.
+Немножко мотивации и психологии.
+
+
+#стартап Заходи: платформа стартапов';
+$lang['thumbnail_height']      = 'Канал о бизнесе, стартапах, новых 
+технологиях и возможностях в России.
+
+Немножко мотивации и психологии.
+
+#стартап Заходи: платформа стартапов';
+$lang['image_width']           = 'Канал о бизнесе, стартапах, новых 
+технологиях и возможностях 
+в России. Немножко мотивации и 
+психологии. 
+#стартап Заходи: платформа стартапов';
+$lang['image_height']          = 'Канал о бизнесе, стартапах, новых технологиях 
+и возможностях в России. Немножко 
+мотивации и психологии. 
+#стартап Заходи: платформа стартапов';
+$lang['cols']                  = 'Канал о бизнесе, стартапах, новых технологиях и возможностях в России.
+Немножко мотивации и психологии.
+
+#стартап Заходи: платформа стартапов';
+$lang['sort']                  = 'Ste Marthe Du Cap La Madeleine';
+$lang['sort_o_file']           = 'Ste Marthe Du Cap La Madeleine';
+$lang['sort_o_mod']            = 'Ste Marthe Du Cap La Madeleine';
+$lang['sort_o_date']           = 'Ste Marthe Du Cap La Madeleine';
+$lang['sort_o_title']          = 'Ste Marthe Du Cap La Madeleine';
+$lang['options']               = 'Канал о бизнесе, стартапах, новых технологиях 
+и возможностях в России. Немножко мотивации и психологии.
+
+#стартап Заходи: платформа стартапов';
