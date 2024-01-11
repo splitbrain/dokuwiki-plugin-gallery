@@ -24,6 +24,16 @@ $meta['sort'] = array(
         Options::SORT_RANDOM,
     )
 );
+
+$meta['alignV'] = array(
+    'multichoice',
+    '_choices' => array(
+        Options::ALIGNV_TOP,
+        Options::ALIGNV_CENTER,
+        Options::ALIGNV_BOTTOM,
+    )
+);
+
 $meta['options'] = array('multicheckbox', '_choices' => array(
     'cache',
     'crop',
