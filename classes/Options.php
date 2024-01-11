@@ -15,6 +15,10 @@ class Options
     public const ALIGN_RIGHT = 2;
     public const ALIGN_CENTER = 3;
 
+    public const ALIGNV_TOP = 'top';
+    public const ALIGNV_BOTTOM = 'bottom';
+    public const ALIGNV_CENTER = 'middle';
+
     // defaults
     public $galleryID = '';
     public $thumbnailWidth = 120;
@@ -37,6 +41,7 @@ class Options
     public $offset = 0;
     public $paginate = 0;
     public $align = self::ALIGN_FULL;
+    public $alignV = self::ALIGNV_CENTER;
 
     /**
      * Options constructor.
@@ -51,6 +56,7 @@ class Options
         $this->lightboxHeight = $plugin->getConf('image_height');
         $this->columns = $plugin->getConf('cols');
         $this->sort = $plugin->getConf('sort');
+        $this->alignV = $plugin->getConf('alignV');
         $this->parseParameters($plugin->getConf('options'));
     }
 
@@ -82,6 +88,12 @@ class Options
                 $this->align = self::ALIGN_CENTER;
             } elseif ($param == 'full') {
                 $this->align = self::ALIGN_FULL;
+            } elseif ($param == 'bottom') {
+                $this->alignV = self::ALIGNV_BOTTOM;
+            } elseif ($param == 'top') {
+                $this->alignV = self::ALIGNV_TOP;
+            } elseif ($param == 'middle') {
+                $this->alignV = self::ALIGNV_CENTER;
             } elseif (preg_match('/^=(\d+)$/', $param, $match)) {
                 $this->limit = (int)$match[1];
             } elseif (preg_match('/^\+(\d+)$/', $param, $match)) {
