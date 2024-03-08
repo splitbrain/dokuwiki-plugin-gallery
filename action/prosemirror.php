@@ -49,9 +49,7 @@ class action_plugin_gallery_prosemirror extends ActionPlugin
             $JSINFO['plugins'] = [];
         }
         $JSINFO['plugins']['gallery'] = [
-            'defaults' => array_map(function ($default) {
-                return ['default' => $default,];
-            }, $defaults),
+            'defaults' => array_map(static fn($default) => ['default' => $default,], $defaults),
         ];
         $JSINFO['plugins']['gallery']['defaults']['namespace'] = ['default' => ''];
     }
