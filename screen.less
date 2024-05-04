@@ -36,7 +36,6 @@ div.plugin-gallery {
             margin: 0;
             padding: 0.4em;
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
 
@@ -56,6 +55,22 @@ div.plugin-gallery {
                     }
                 }
             }
+
+            &.alignv-middle {
+                align-items: center;
+            }
+        
+            &.alignv-top {
+                flex-direction: column;
+            }
+        
+            &.alignv-bottom {
+                flex-direction: column-reverse;
+            }
+
+            &.empty {
+                border: 0;
+            }
         }
     }
 
@@ -66,17 +81,20 @@ div.plugin-gallery {
     &.align-left {
         float: left;
         margin-right: 1em;
+        width: 100%;
     }
 
     &.align-right {
         float: right;
         margin-left: 1em;
+        width: 100%;
     }
 
     &.align-center {
         display: flex;
         justify-content: center;
         flex-wrap: wrap; // wrap page selector on new line
+        width: 100%;
     }
 
     .gallery-page-selector {
