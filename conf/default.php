@@ -11,6 +11,7 @@ $conf['thumbnail_height'] = 150;
 $conf['image_width'] = 1600;
 $conf['image_height'] = 1200;
 $conf['cols'] = 0;
+$conf['alignV'] = 'middle';
 
 $conf['sort'] = 'file';
 $conf['options'] = 'cache, crop, lightbox';
