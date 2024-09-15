@@ -474,25 +474,31 @@ var SimpleLightbox = /*#__PURE__*/function () {
         length = this.relatedElements.length,
         next = index + 1 < 0 ? length - 1 : index + 1 >= length - 1 ? 0 : index + 1,
         prev = index - 1 < 0 ? length - 1 : index - 1 >= length - 1 ? 0 : index - 1,
-        nextImage = new Image(),
+        nextImage,
+        prevImage;
+      if (this.relatedElements[next].nodeName != 'VIDEO'){
+        nextImage = new Image();
+        nextImage.addEventListener('load', function (event) {
+          var src = event.target.getAttribute('src');
+          if (_this3.loadedImages.indexOf(src) === -1) {
+            //is this condition even required... setting multiple times will not change usage...
+            _this3.loadedImages.push(src);
+          }
+          _this3.relatedElements[index].dispatchEvent(new Event('nextImageLoaded.' + _this3.eventNamespace));
+        });
+        nextImage.setAttribute('src', this.relatedElements[next].getAttribute(this.options.sourceAttr));
+      }
+      if (this.relatedElements[prev].nodeName != 'VIDEO'){
         prevImage = new Image();
-      nextImage.addEventListener('load', function (event) {
-        var src = event.target.getAttribute('src');
-        if (_this3.loadedImages.indexOf(src) === -1) {
-          //is this condition even required... setting multiple times will not change usage...
-          _this3.loadedImages.push(src);
-        }
-        _this3.relatedElements[index].dispatchEvent(new Event('nextImageLoaded.' + _this3.eventNamespace));
-      });
-      nextImage.setAttribute('src', this.relatedElements[next].getAttribute(this.options.sourceAttr));
-      prevImage.addEventListener('load', function (event) {
-        var src = event.target.getAttribute('src');
-        if (_this3.loadedImages.indexOf(src) === -1) {
-          _this3.loadedImages.push(src);
-        }
-        _this3.relatedElements[index].dispatchEvent(new Event('prevImageLoaded.' + _this3.eventNamespace));
-      });
-      prevImage.setAttribute('src', this.relatedElements[prev].getAttribute(this.options.sourceAttr));
+        prevImage.addEventListener('load', function (event) {
+          var src = event.target.getAttribute('src');
+          if (_this3.loadedImages.indexOf(src) === -1) {
+            _this3.loadedImages.push(src);
+          }
+          _this3.relatedElements[index].dispatchEvent(new Event('prevImageLoaded.' + _this3.eventNamespace));
+        });
+        prevImage.setAttribute('src', this.relatedElements[prev].getAttribute(this.options.sourceAttr));
+      }
     }
   }, {
     key: "loadImage",
@@ -519,9 +525,18 @@ var SimpleLightbox = /*#__PURE__*/function () {
           setTimeout(function () {
             var element = _this4.relatedElements[_this4.currentImageIndex];
             if (!_this4.currentImage) return;
-            _this4.currentImage.setAttribute('src', element.getAttribute(_this4.options.sourceAttr));
-            if (_this4.loadedImages.indexOf(element.getAttribute(_this4.options.sourceAttr)) === -1) {
-              _this4.show(_this4.domNodes.spinner);
+            if (!!_this4.currentImage.previousSibling && _this4.currentImage.previousSibling.nodeName == 'VIDEO'){
+              _this4.currentImage.previousSibling.remove();
+	          }
+            if (element.nodeName == 'VIDEO'){
+              var video = element.cloneNode(true);
+              _this4.currentImage.style.display = 'none';
+              _this4.currentImage.parentNode.insertBefore(video,_this4.currentImage);
+            } else {
+              _this4.currentImage.setAttribute('src', element.getAttribute(_this4.options.sourceAttr));
+              if (_this4.loadedImages.indexOf(element.getAttribute(_this4.options.sourceAttr)) === -1) {
+                _this4.show(_this4.domNodes.spinner);
+              }
             }
             if (_this4.domNodes.image.contains(_this4.domNodes.caption)) {
               _this4.domNodes.image.removeChild(_this4.domNodes.caption);
@@ -541,122 +556,149 @@ var SimpleLightbox = /*#__PURE__*/function () {
       if (!this.currentImage) {
         return false;
       }
-      var tmpImage = new Image(),
-        windowWidth = window.innerWidth * this.options.widthRatio,
+      var windowWidth = window.innerWidth * this.options.widthRatio,
         windowHeight = window.innerHeight * this.options.heightRatio;
-      tmpImage.setAttribute('src', this.currentImage.getAttribute('src'));
       this.currentImage.dataset.scale = 1;
       this.currentImage.dataset.translateX = 0;
       this.currentImage.dataset.translateY = 0;
       this.zoomPanElement(0, 0, 1);
-      tmpImage.addEventListener('error', function (event) {
-        _this5.relatedElements[_this5.currentImageIndex].dispatchEvent(new Event('error.' + _this5.eventNamespace));
-        _this5.isAnimating = false;
-        _this5.isOpen = true;
-        _this5.domNodes.spinner.style.display = 'none';
-        var dirIsDefined = direction === 1 || direction === -1;
-        if (_this5.initialImageIndex === _this5.currentImageIndex && dirIsDefined) {
-          return _this5.close();
-        }
-        if (_this5.options.alertError) {
-          alert(_this5.options.alertErrorMessage);
-        }
-        _this5.loadImage(dirIsDefined ? direction : 1);
-      });
-      tmpImage.addEventListener('load', function (event) {
-        if (typeof direction !== 'undefined') {
-          _this5.relatedElements[_this5.currentImageIndex].dispatchEvent(new Event('changed.' + _this5.eventNamespace));
-          _this5.relatedElements[_this5.currentImageIndex].dispatchEvent(new Event((direction === 1 ? 'nextDone' : 'prevDone') + '.' + _this5.eventNamespace));
-        }
-
-        // history
-        if (_this5.options.history) {
-          _this5.updateURL();
-        }
-        if (_this5.loadedImages.indexOf(_this5.currentImage.getAttribute('src')) === -1) {
-          _this5.loadedImages.push(_this5.currentImage.getAttribute('src'));
-        }
-        var imageWidth = event.target.width,
-          imageHeight = event.target.height;
-        if (_this5.options.scaleImageToRatio || imageWidth > windowWidth || imageHeight > windowHeight) {
+      if (!!this.currentImage.previousSibling && this.currentImage.previousSibling.nodeName == 'VIDEO'){
+        let video = this.currentImage.previousSibling;
+        var imageHeight = this.elements[this.currentImageIndex].videoHeight;
+        var imageWidth = this.elements[this.currentImageIndex].videoWidth;
+        if (this.options.scaleImageToRatio || imageWidth > windowWidth || imageHeight > windowHeight) {
           var ratio = imageWidth / imageHeight > windowWidth / windowHeight ? imageWidth / windowWidth : imageHeight / windowHeight;
           imageWidth /= ratio;
           imageHeight /= ratio;
         }
-        _this5.domNodes.image.style.top = (window.innerHeight - imageHeight) / 2 + 'px';
-        _this5.domNodes.image.style.left = (window.innerWidth - imageWidth - _this5.globalScrollbarWidth) / 2 + 'px';
-        _this5.domNodes.image.style.width = imageWidth + 'px';
-        _this5.domNodes.image.style.height = imageHeight + 'px';
-        _this5.domNodes.spinner.style.display = 'none';
-        if (_this5.options.focus) {
-          _this5.forceFocus();
+        video.style.width = '100%';
+        video.style.height = '100%';
+        this.domNodes.image.style.transform = 'unset';
+        this.domNodes.image.style.transition = 'unset';
+        this.domNodes.image.style.top = (window.innerHeight - imageHeight) / 2 + 'px';
+        this.domNodes.image.style.left = (window.innerWidth - imageWidth - _this5.globalScrollbarWidth) / 2 + 'px';
+        this.domNodes.image.style.width = imageWidth + 'px';
+        this.domNodes.image.style.height = imageHeight + 'px';
+        // history
+        if (this.options.history) {
+          this.updateURL();
         }
-        _this5.fadeIn(_this5.currentImage, _this5.options.fadeSpeed, function () {
-          if (_this5.options.focus) {
-            _this5.domNodes.wrapper.focus();
-          }
+	      this.fadeIn(_this5.domNodes.image, _this5.options.fadeSpeed, function () {
+          _this5.isAnimating = false;
+          video.play();
         });
-        _this5.isOpen = true;
-        var captionContainer, captionText;
-        if (typeof _this5.options.captionSelector === 'string') {
-          captionContainer = _this5.options.captionSelector === 'self' ? _this5.relatedElements[_this5.currentImageIndex] : _this5.getCaptionElement(_this5.relatedElements[_this5.currentImageIndex]);
-        } else if (typeof _this5.options.captionSelector === 'function') {
-          captionContainer = _this5.options.captionSelector(_this5.relatedElements[_this5.currentImageIndex]);
-        }
-        if (_this5.options.captions && captionContainer) {
-          if (_this5.options.captionType === 'data') {
-            captionText = captionContainer.dataset[_this5.options.captionsData];
-          } else if (_this5.options.captionType === 'text') {
-            captionText = captionContainer.innerHTML;
+      } else {
+        var tmpImage = new Image();
+        tmpImage.setAttribute('src', this.currentImage.getAttribute('src'));
+        tmpImage.addEventListener('error', function (event) {
+          _this5.relatedElements[_this5.currentImageIndex].dispatchEvent(new Event('error.' + _this5.eventNamespace));
+          _this5.isAnimating = false;
+          _this5.isOpen = true;
+          _this5.domNodes.spinner.style.display = 'none';
+          var dirIsDefined = direction === 1 || direction === -1;
+          if (_this5.initialImageIndex === _this5.currentImageIndex && dirIsDefined) {
+            return _this5.close();
+          }
+          if (_this5.options.alertError) {
+            alert(_this5.options.alertErrorMessage);
+          }
+          _this5.loadImage(dirIsDefined ? direction : 1);
+        });
+        tmpImage.addEventListener('load', function (event) {
+          if (typeof direction !== 'undefined') {
+            _this5.relatedElements[_this5.currentImageIndex].dispatchEvent(new Event('changed.' + _this5.eventNamespace));
+            _this5.relatedElements[_this5.currentImageIndex].dispatchEvent(new Event((direction === 1 ? 'nextDone' : 'prevDone') + '.' + _this5.eventNamespace));
+          }
+
+          // history
+          if (_this5.options.history) {
+            _this5.updateURL();
+          }
+          if (_this5.loadedImages.indexOf(_this5.currentImage.getAttribute('src')) === -1) {
+            _this5.loadedImages.push(_this5.currentImage.getAttribute('src'));
+          }
+          var imageWidth = event.target.width,
+            imageHeight = event.target.height;
+          if (_this5.options.scaleImageToRatio || imageWidth > windowWidth || imageHeight > windowHeight) {
+            var ratio = imageWidth / imageHeight > windowWidth / windowHeight ? imageWidth / windowWidth : imageHeight / windowHeight;
+            imageWidth /= ratio;
+            imageHeight /= ratio;
+          }
+          _this5.domNodes.image.style.top = (window.innerHeight - imageHeight) / 2 + 'px';
+          _this5.domNodes.image.style.left = (window.innerWidth - imageWidth - _this5.globalScrollbarWidth) / 2 + 'px';
+          _this5.domNodes.image.style.width = imageWidth + 'px';
+          _this5.domNodes.image.style.height = imageHeight + 'px';
+          _this5.domNodes.spinner.style.display = 'none';
+          if (_this5.options.focus) {
+            _this5.forceFocus();
+          }
+          _this5.fadeIn(_this5.currentImage, _this5.options.fadeSpeed, function () {
+            if (_this5.options.focus) {
+              _this5.domNodes.wrapper.focus();
+            }
+          });
+          _this5.isOpen = true;
+          var captionContainer, captionText;
+          if (typeof _this5.options.captionSelector === 'string') {
+            captionContainer = _this5.options.captionSelector === 'self' ? _this5.relatedElements[_this5.currentImageIndex] : _this5.getCaptionElement(_this5.relatedElements[_this5.currentImageIndex]);
+          } else if (typeof _this5.options.captionSelector === 'function') {
+            captionContainer = _this5.options.captionSelector(_this5.relatedElements[_this5.currentImageIndex]);
+          }
+          if (_this5.options.captions && captionContainer) {
+            if (_this5.options.captionType === 'data') {
+              captionText = captionContainer.dataset[_this5.options.captionsData];
+            } else if (_this5.options.captionType === 'text') {
+              captionText = captionContainer.innerHTML;
+            } else {
+              captionText = captionContainer.getAttribute(_this5.options.captionsData);
+            }
+          }
+          if (!_this5.options.loop) {
+            if (_this5.currentImageIndex === 0) {
+              _this5.hide(_this5.domNodes.navigation.querySelector('.sl-prev'));
+            }
+            if (_this5.currentImageIndex >= _this5.relatedElements.length - 1) {
+              _this5.hide(_this5.domNodes.navigation.querySelector('.sl-next'));
+            }
+            if (_this5.currentImageIndex > 0) {
+              _this5.show(_this5.domNodes.navigation.querySelector('.sl-prev'));
+            }
+            if (_this5.currentImageIndex < _this5.relatedElements.length - 1) {
+              _this5.show(_this5.domNodes.navigation.querySelector('.sl-next'));
+            }
           } else {
-            captionText = captionContainer.getAttribute(_this5.options.captionsData);
+            if (_this5.relatedElements.length === 1) {
+              _this5.hide(_this5.domNodes.navigation.querySelectorAll('.sl-prev, .sl-next'));
+            } else {
+              _this5.show(_this5.domNodes.navigation.querySelectorAll('.sl-prev, .sl-next'));
+            }
           }
-        }
-        if (!_this5.options.loop) {
-          if (_this5.currentImageIndex === 0) {
-            _this5.hide(_this5.domNodes.navigation.querySelector('.sl-prev'));
-          }
-          if (_this5.currentImageIndex >= _this5.relatedElements.length - 1) {
-            _this5.hide(_this5.domNodes.navigation.querySelector('.sl-next'));
-          }
-          if (_this5.currentImageIndex > 0) {
-            _this5.show(_this5.domNodes.navigation.querySelector('.sl-prev'));
-          }
-          if (_this5.currentImageIndex < _this5.relatedElements.length - 1) {
-            _this5.show(_this5.domNodes.navigation.querySelector('.sl-next'));
-          }
-        } else {
-          if (_this5.relatedElements.length === 1) {
-            _this5.hide(_this5.domNodes.navigation.querySelectorAll('.sl-prev, .sl-next'));
+          if (direction === 1 || direction === -1) {
+            if (_this5.options.animationSlide) {
+              _this5.slide(0, 100 * direction + 'px');
+              setTimeout(function () {
+                _this5.slide(_this5.options.animationSpeed / 1000, 0 + 'px');
+              }, 50);
+            }
+            _this5.fadeIn(_this5.domNodes.image, _this5.options.fadeSpeed, function () {
+              _this5.isAnimating = false;
+              _this5.setCaption(captionText, imageWidth);
+            });
           } else {
-            _this5.show(_this5.domNodes.navigation.querySelectorAll('.sl-prev, .sl-next'));
-          }
-        }
-        if (direction === 1 || direction === -1) {
-          if (_this5.options.animationSlide) {
-            _this5.slide(0, 100 * direction + 'px');
-            setTimeout(function () {
-              _this5.slide(_this5.options.animationSpeed / 1000, 0 + 'px');
-            }, 50);
-          }
-          _this5.fadeIn(_this5.domNodes.image, _this5.options.fadeSpeed, function () {
             _this5.isAnimating = false;
             _this5.setCaption(captionText, imageWidth);
-          });
-        } else {
-          _this5.isAnimating = false;
-          _this5.setCaption(captionText, imageWidth);
-        }
-        if (_this5.options.additionalHtml && !_this5.domNodes.additionalHtml) {
-          _this5.domNodes.additionalHtml = document.createElement('div');
-          _this5.domNodes.additionalHtml.classList.add('sl-additional-html');
-          _this5.domNodes.additionalHtml.innerHTML = _this5.options.additionalHtml;
-          _this5.domNodes.image.appendChild(_this5.domNodes.additionalHtml);
-        }
-        if (_this5.options.download) {
-          _this5.domNodes.downloadLink.setAttribute('href', _this5.currentImage.getAttribute('src'));
-        }
-      });
+          }
+          if (_this5.options.additionalHtml && !_this5.domNodes.additionalHtml) {
+            _this5.domNodes.additionalHtml = document.createElement('div');
+            _this5.domNodes.additionalHtml.classList.add('sl-additional-html');
+            _this5.domNodes.additionalHtml.innerHTML = _this5.options.additionalHtml;
+            _this5.domNodes.image.appendChild(_this5.domNodes.additionalHtml);
+          }
+          if (_this5.options.download) {
+            _this5.domNodes.downloadLink.setAttribute('href', _this5.currentImage.getAttribute('src'));
+          }
+        });
+      }
     }
   }, {
     key: "zoomPanElement",
