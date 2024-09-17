@@ -58,7 +58,7 @@ jQuery(function () {
     /**
      * Initialize the lightbox
      */
-    new SimpleLightbox("a.lightbox, a[rel^='lightbox']", {
+    new SimpleLightbox(".lightbox, [rel^='lightbox']", {
         sourceAttr: 'data-url',
         captionSelector: 'self',
         captionType: 'data',
@@ -67,7 +67,8 @@ jQuery(function () {
         captionHTML: true, // we allow HTML and double escape in the formatter
         alertError: false,
         fileExt: false,
-        uniqueImages: false
+        uniqueImages: false,
+        widthRatio: 1.0
     });
 });
 

@@ -40,9 +40,10 @@ div.plugin-gallery {
             justify-content: space-between;
             overflow: hidden;
 
-            img {
-                max-width: 100%;
-                height: auto;
+            img, video {
+                aspect-ratio: 1/1;
+                object-fit: cover;
+                width: 100%;
             }
 
             figcaption {
