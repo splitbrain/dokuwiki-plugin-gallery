@@ -192,6 +192,17 @@ var SimpleLightbox = /*#__PURE__*/function () {
         _this.openImage(event.currentTarget);
       }
     });
+    this.addEventListener(this.elements, 'play.' + this.eventNamespace, function (event) {
+      if (_this.isValidLink(event.currentTarget)) {
+        event.preventDefault();
+        if (_this.isAnimating) {
+          return false;
+        }
+        this.pause();
+        _this.initialImageIndex = _this.elements.indexOf(event.currentTarget);
+        _this.openImage(event.currentTarget);
+      }
+    });
 
     // close addEventListener click addEventListener doc
     if (this.options.docClose) {
@@ -530,6 +541,7 @@ var SimpleLightbox = /*#__PURE__*/function () {
 	          }
             if (element.nodeName == 'VIDEO'){
               var video = element.cloneNode(true);
+              video.onplay = null;
               _this4.currentImage.style.display = 'none';
               _this4.currentImage.parentNode.insertBefore(video,_this4.currentImage);
             } else {
@@ -586,6 +598,7 @@ var SimpleLightbox = /*#__PURE__*/function () {
 	      this.fadeIn(_this5.domNodes.image, _this5.options.fadeSpeed, function () {
           _this5.isAnimating = false;
           video.play();
+          _this5.isOpen = true;
         });
       } else {
         var tmpImage = new Image();
@@ -1208,14 +1221,20 @@ var SimpleLightbox = /*#__PURE__*/function () {
       var targetURL = element.getAttribute(this.options.sourceAttr);
       this.currentImage = document.createElement('img');
       this.currentImage.style.display = 'none';
-      this.currentImage.setAttribute('src', targetURL);
+      this.domNodes.image.innerHTML = '';
+      if (element.nodeName == 'VIDEO'){
+        var video = element.cloneNode(true);
+        video.onplay = null;
+        this.domNodes.image.appendChild(video);
+      } else {
+        this.currentImage.setAttribute('src', targetURL);
+        if (this.loadedImages.indexOf(targetURL) === -1) {
+          this.loadedImages.push(targetURL);
+        }
+      }
       this.currentImage.dataset.scale = 1;
       this.currentImage.dataset.translateX = 0;
       this.currentImage.dataset.translateY = 0;
-      if (this.loadedImages.indexOf(targetURL) === -1) {
-        this.loadedImages.push(targetURL);
-      }
-      this.domNodes.image.innerHTML = '';
       this.domNodes.image.setAttribute('style', '');
       this.domNodes.image.appendChild(this.currentImage);
       this.fadeIn(this.domNodes.overlay, this.options.fadeSpeed);
