@@ -63,7 +63,7 @@ class BasicFormatter
         ];
 
         if ($image->isExternal()) {
-            $this->renderer->externallink($link, ...array_values($imgdata));
+            $this->renderer->externallink($link, $imgdata['title']);
         } else {
             $this->renderer->internalmedia(
                 ":$link",
