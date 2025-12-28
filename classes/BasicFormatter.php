@@ -65,7 +65,14 @@ class BasicFormatter
         if ($image->isExternal()) {
             $this->renderer->externallink($link, ...array_values($imgdata));
         } else {
-            $this->renderer->internalmedia(":$link", ...array_values($imgdata)); // prefix with : to ensure absolute src
+            $this->renderer->internalmedia(
+                ":$link",
+                $imgdata['title'],
+                $imgdata['align'],
+                $imgdata['width'],
+                $imgdata['height'],
+                $imgdata['cache']
+            ); // prefix with : to ensure absolute src
         }
     }
 
