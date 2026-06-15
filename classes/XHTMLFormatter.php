@@ -141,10 +141,13 @@ class XHTMLFormatter extends BasicFormatter
         }
 
         $html = '<figure ' . buildAttributes($fig, true) . '>';
-        $html .= '<a ' . buildAttributes($a, true) . '>';
-        $html .= '<img ' . buildAttributes($img, true) . ' />';
-        $html .= '</a>';
-
+        if ($image->imagetype == 'mp4'){
+            $html .= str_replace('width="320" height="240"','',$this->renderer->_video($image->getSrc(),320,240,$a));
+        } else {
+            $html .= '<a ' . buildAttributes($a, true) . '>';
+            $html .= '<img ' . buildAttributes($img, true) . ' />';
+            $html .= '</a>';
+        }
         if ($this->options->showtitle || $this->options->showname) {
             $html .= '<figcaption>';
             if ($this->options->showtitle) {

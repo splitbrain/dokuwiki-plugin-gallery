@@ -6,7 +6,7 @@ use dokuwiki\Utf8\PhpString;
 
 class Image
 {
-    public const IMG_REGEX = '/\.(jpe?g|gif|png|svg|webp)$/i';
+    public const IMG_REGEX = '/\.(jpe?g|gif|png|svg|webpi|mp4)$/i';
 
     protected $isExternal = false;
     protected $src;
@@ -19,6 +19,7 @@ class Image
     protected $created = 0;
     protected $modified = 0;
     protected $detaillink;
+    public $imagetype;
 
 
     /**
@@ -45,6 +46,8 @@ class Image
             $this->width = $jpegMeta->getField('File.Width');
             $this->height = $jpegMeta->getField('File.Height');
         }
+        if (preg_match(self::IMG_REGEX, $this->filename, $match))
+            $this->imagetype = $match[1];
     }
 
     public function isExternal()
