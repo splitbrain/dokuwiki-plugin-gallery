@@ -80,6 +80,7 @@ class action_plugin_gallery_prosemirror extends ActionPlugin
         $data = $event->data['data'];
         // FIXME source can be something other than namespace
         [$ns, $options] = $data;
+        $options = Options::fromArray($options);
 
         if (cleanID($ns) === $ns) {
             $ns = ':' . $ns;

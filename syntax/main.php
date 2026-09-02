@@ -72,7 +72,7 @@ class syntax_plugin_gallery_main extends SyntaxPlugin
         $options->parseParameters($params);
 
         return [
-            $src, $options
+            $src, $options->toArray()
         ];
     }
 
@@ -80,6 +80,7 @@ class syntax_plugin_gallery_main extends SyntaxPlugin
     public function render($mode, Doku_Renderer $R, $data)
     {
         [$src, $options] = $data;
+        $options = Options::fromArray($options);
 
         try {
             if (is_array($src)) {
