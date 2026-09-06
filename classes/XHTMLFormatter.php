@@ -136,6 +136,19 @@ class XHTMLFormatter extends BasicFormatter
         // figure properties
         $fig = [];
         $fig['class'] = 'gallery-image';
+
+        switch ($this->options->alignV) {
+            case Options::ALIGNV_CENTER:
+                $fig['class'] .= ' alignv-middle';
+                break;
+            case Options::ALIGNV_TOP:
+                $fig['class'] .= ' alignv-top';
+                break;
+            case Options::ALIGNV_BOTTOM:
+                $fig['class'] .= ' alignv-bottom';
+                break;
+        }
+
         if ($this->options->align !== Options::ALIGN_FULL) {
             $fig['style'] = 'max-width: ' . $this->options->thumbnailWidth . 'px; ';
         }
