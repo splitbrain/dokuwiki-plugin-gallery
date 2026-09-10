@@ -46,24 +46,16 @@ abstract class AbstractGallery
 
         switch ($this->options->sort) {
             case Options::SORT_FILE:
-                usort($images, function ($a, $b) {
-                    return Sort::strcmp($a->getFilename(), $b->getFilename());
-                });
+                usort($images, static fn($a, $b) => Sort::strcmp($a->getFilename(), $b->getFilename()));
                 break;
             case Options::SORT_CTIME:
-                usort($images, function ($a, $b) {
-                    return $a->getCreated() - $b->getCreated();
-                });
+                usort($images, static fn($a, $b) => $a->getCreated() - $b->getCreated());
                 break;
             case Options::SORT_MTIME:
-                usort($images, function ($a, $b) {
-                    return $a->getModified() - $b->getModified();
-                });
+                usort($images, static fn($a, $b) => $a->getModified() - $b->getModified());
                 break;
             case Options::SORT_TITLE:
-                usort($images, function ($a, $b) {
-                    return Sort::strcmp($a->getTitle(), $b->getTitle());
-                });
+                usort($images, static fn($a, $b) => Sort::strcmp($a->getTitle(), $b->getTitle()));
                 break;
             case Options::SORT_RANDOM:
                 shuffle($images);
