@@ -538,7 +538,7 @@ var SimpleLightbox = /*#__PURE__*/function () {
             if (!_this4.currentImage) return;
             if (!!_this4.currentImage.previousSibling && _this4.currentImage.previousSibling.nodeName == 'VIDEO'){
               _this4.currentImage.previousSibling.remove();
-	          }
+            }
             if (element.nodeName == 'VIDEO'){
               var video = element.cloneNode(true);
               video.onplay = null;
@@ -569,7 +569,7 @@ var SimpleLightbox = /*#__PURE__*/function () {
         return false;
       }
       var windowWidth = window.innerWidth * this.options.widthRatio,
-        windowHeight = window.innerHeight * this.options.heightRatio;
+          windowHeight = window.innerHeight * this.options.heightRatio;
       this.currentImage.dataset.scale = 1;
       this.currentImage.dataset.translateX = 0;
       this.currentImage.dataset.translateY = 0;
@@ -595,7 +595,7 @@ var SimpleLightbox = /*#__PURE__*/function () {
         if (this.options.history) {
           this.updateURL();
         }
-	      this.fadeIn(_this5.domNodes.image, _this5.options.fadeSpeed, function () {
+        this.fadeIn(_this5.domNodes.image, _this5.options.fadeSpeed, function () {
           _this5.isAnimating = false;
           video.play();
           _this5.isOpen = true;
