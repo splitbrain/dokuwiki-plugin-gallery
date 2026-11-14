@@ -29,6 +29,6 @@ class syntax_plugin_gallery_list extends syntax_plugin_gallery_main
         $list = array_map('trim', $list);
         $list = array_filter($list);
 
-        return [$list, $options];
+        return [$list, $options->toArray()];
     }
 }

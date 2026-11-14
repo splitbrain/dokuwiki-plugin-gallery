@@ -55,6 +55,33 @@ class Options
     }
 
     /**
+     * Export all option values as a plain array
+     *
+     * Used to store the options in the instruction cache without serializing an object.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return get_object_vars($this);
+    }
+
+    /**
+     * Recreate an instance from a previously exported array
+     *
+     * @param array $data option values as returned by toArray()
+     * @return self
+     */
+    public static function fromArray($data)
+    {
+        $options = new self();
+        foreach ($data as $key => $value) {
+            $options->$key = $value;
+        }
+        return $options;
+    }
+
+    /**
      * Simple option strings parser
      *
      * @param string $params
